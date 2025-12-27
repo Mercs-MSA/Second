@@ -5,16 +5,16 @@
 
 ### Supported Platforms
 * Raspberry Pi (via [Kiosk Installer](install/rpi.md))
-* [Android](install/android.md) ([APK](https://github.com/meowmeowahr/attendance_tracker_prototype_flutter/releases/latest))
+* [Android](install/android.md) ([APK](https://github.com/Mercs-MSA/Second/releases/latest))
 * iPadOS (coming soon)
-* [Web](https://meowmeowahr.github.io/attendance_tracker_prototype_flutter/app) (via GitHub Pages, older versions will **NOT** remain accessible)
+* [Web](https://mercs-msa.github.io/Second/app/) (via GitHub Pages, older versions will **NOT** remain accessible)
 
 ### Development Platforms
 
 !!! warning
     These platforms will not receive any support, and are only intended for development purposes.
 
-[GitHub Releases](https://github.com/meowmeowahr/attendance_tracker_prototype_flutter/releases)
+[GitHub Releases](https://github.com/Mercs-MSA/Second/releases)
 
 * Windows x86_64
 * Linux x86_64 and ARM64
