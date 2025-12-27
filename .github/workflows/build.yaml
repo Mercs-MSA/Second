@@ -194,13 +194,13 @@ jobs:
       - name: Zip macOS Files
         run: |
           VERSION="${{ github.ref_name }}"
-          ditto -c -k --sequesterRsrc --keepParent build/macos/Build/Products/Release/*.app macos-x86_64-${VERSION}.zip
+          ditto -c -k --sequesterRsrc --keepParent build/macos/Build/Products/Release/*.app macos-universal-${VERSION}.zip
 
       - name: Upload macOS Artifact
         uses: actions/upload-artifact@v4
         with:
           name: release-macos
-          path: macos-x86_64-${{ github.ref_name }}.zip
+          path: macos-universal-${{ github.ref_name }}.zip
 
   release:
     name: Create GitHub Release
