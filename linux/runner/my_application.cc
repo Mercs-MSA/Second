@@ -47,6 +47,12 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "attendance_tracker");
   }
 
+  if (g_file_test("assets", G_FILE_TEST_IS_DIR)){
+    gtk_window_set_icon_from_file(window, "assets/icons/icon_96.png", NULL); // For debug mode
+  } else {
+    gtk_window_set_icon_from_file(window, "data/flutter_assets/assets/icons/icon_96.png", NULL); // For release mode
+  }
+
   gtk_window_set_default_size(window, 1280, 720);
   gtk_widget_show(GTK_WIDGET(window));
 
