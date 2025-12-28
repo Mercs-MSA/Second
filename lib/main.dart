@@ -465,6 +465,21 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  void showAbout() {
+    showAboutDialog(
+      context: context,
+      applicationName: 'Second',
+      applicationVersion:
+          "${packageInfo?.version} (Build #${packageInfo?.buildNumber})",
+      applicationIcon: Image.asset(
+        "assets/icons/icon_96.png",
+        width: 64,
+        height: 64,
+      ),
+      children: [Text("An FRC Attendance Tracker")],
+    );
+  }
+
   @override
   bool get wantKeepAlive {
     return true;
@@ -659,18 +674,7 @@ class _HomePageState extends State<HomePage>
                           value: 'about',
                           child: Text('About'),
                           onTap: () {
-                            showAboutDialog(
-                              context: context,
-                              applicationName: 'Second',
-                              applicationVersion:
-                                  "${packageInfo?.version} (Build #${packageInfo?.buildNumber})",
-                              applicationIcon: Image.asset(
-                                "assets/icons/icon_96.png",
-                                width: 64,
-                                height: 64,
-                              ),
-                              children: [Text("An FRC Attendance Tracker")],
-                            );
+                            showAbout();
                           },
                         ),
                       ],
@@ -865,13 +869,7 @@ class _HomePageState extends State<HomePage>
                     value: 'about',
                     child: Text('About'),
                     onTap: () {
-                      showAboutDialog(
-                        context: context,
-                        applicationName: 'Attendance Tracker',
-                        applicationVersion: '1.0.0',
-                        applicationIcon: FlutterLogo(size: 64),
-                        children: [],
-                      );
+                      showAbout();
                     },
                   ),
                 ],
