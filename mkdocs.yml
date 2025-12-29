@@ -39,20 +39,21 @@ theme:
         name: Switch to system preference
 nav:
   - index.md
-  - Installation:
-      - install/android.md
-      - install/rpi.md
-  - User Guide:
-      - Google Sheet and Account Setup:
-          - google_setup/account.md
-          - google_setup/sheet.md
-      - User Interface:
-          - ui/home.md
-          - ui/member.md
-      - Configuration:
-          - config/index.md
-          - config/androidlock.md
-  - RFID Hardware: rfid.md
+  - Software and Account Setup:
+    - Google Sheet and Account Setup:
+        - google_setup/account.md
+        - google_setup/sheet.md
+    - Installation:
+        - install/android.md
+        - install/rpi.md
+    - Configuration:
+        - config/index.md
+        - config/androidlock.md
+    - User Interface:
+        - ui/home.md
+        - ui/member.md
+  - Hardware Setup:
+    - RFID Hardware: rfid.md
 
 extra:
   version:
