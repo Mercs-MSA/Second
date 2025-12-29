@@ -20,7 +20,7 @@ Android (7+) APK files are available on [Github Releases](https://github.com/Mer
 #### 3: Follow the prompts to install the app
 
 !!! Note
-    You may be asked to run a Google Play Protect scan. This may take a while.
+    You may be asked to run a Google Play Protect scan. This may take a minute.
 
 ![install.png](../media/android_install/install.png)
 
