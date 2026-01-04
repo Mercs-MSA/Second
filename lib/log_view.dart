@@ -142,12 +142,13 @@ class _LoggerViewState extends State<LoggerView> {
       appBar: AppBar(
         title: Text("Log Viewer"),
         actions: [
-          IconButton(
-            icon: Icon(Icons.delete_sweep),
-            onPressed: () {
-              BoundedMemoryPrinter.logs.value = [];
-            },
-          ),
+          if (_isPinVerified)
+            IconButton(
+              icon: Icon(Icons.delete_sweep),
+              onPressed: () {
+                BoundedMemoryPrinter.logs.value = [];
+              },
+            ),
         ],
       ),
       body: !_isPinVerified
