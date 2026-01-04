@@ -977,14 +977,25 @@ class _HomePageState extends State<HomePage>
                                                     Alignment.bottomRight,
                                                 children: [
                                                   CircleAvatar(
-                                                    child: Text(
-                                                      member.name
-                                                          .split(' ')
-                                                          .map(
-                                                            (part) => part[0],
-                                                          )
-                                                          .take(2)
-                                                          .join(),
+                                                    child: Builder(
+                                                      builder: (context) {
+                                                        List<String> nameParts =
+                                                            member.name.split(
+                                                              ' ',
+                                                            );
+                                                        nameParts.removeWhere(
+                                                          (val) => val.isEmpty,
+                                                        );
+                                                        return Text(
+                                                          nameParts
+                                                              .map(
+                                                                (part) =>
+                                                                    part[0],
+                                                              )
+                                                              .take(2)
+                                                              .join(),
+                                                        );
+                                                      },
                                                     ),
                                                   ),
                                                   Icon(
