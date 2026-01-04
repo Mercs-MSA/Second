@@ -344,7 +344,6 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-
   Future<void> _editAppTheme(BuildContext context) async {
     return showDialog(
       context: context,
@@ -555,7 +554,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     );
                   }
                 },
-
               ),
             ],
           ),
@@ -571,14 +569,14 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   Future<void> _editStationLocation(BuildContext context) async {
-    bool isFixed =
-        _settingsManager.getValue<bool>("station.fixed") ?? false;
+    bool isFixed = _settingsManager.getValue<bool>("station.fixed") ?? false;
     final locationController = TextEditingController(
       text: _settingsManager.getValue<String>("station.location") ?? "",
     );
     final newLocationController = TextEditingController();
     List<String> locations =
-        _settingsManager.getValue<List<String>>("station.locations") ?? ["Shop"];
+        _settingsManager.getValue<List<String>>("station.locations") ??
+        ["Shop"];
 
     return showDialog(
       context: context,
@@ -695,6 +693,9 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
           TextButton(
             onPressed: () async {
+              if (newLocationController.text.isNotEmpty) {
+                locations.add(newLocationController.text);
+              }
               await _settingsManager.setValue(
                 'station.location',
                 locationController.text,
@@ -713,7 +714,6 @@ class _SettingsPageState extends State<SettingsPage> {
       ),
     );
   }
-
 
   Future<void> _resetPin(BuildContext context) async {
     final formKey = GlobalKey<FormState>();
@@ -848,12 +848,11 @@ class _SettingsPageState extends State<SettingsPage> {
     } catch (e, st) {
       widget.logger.e("Failed to export settings $e\n$st");
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to export settings: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to export settings: $e')));
     }
   }
-
 
   Future<void> _importSettings(BuildContext context) async {
     try {
@@ -894,7 +893,6 @@ class _SettingsPageState extends State<SettingsPage> {
       );
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -1130,19 +1128,20 @@ class _SettingsPageState extends State<SettingsPage> {
                       trailing: IconButton(
                         onPressed: () {
                           showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                icon: Icon(Icons.warning_rounded, size: 128,),
-                                title: const Text('Warning'),
-                                content: const Text(
-                                  'Using developer options may cause unexpected behavior, and is not supported. Proceed with caution.',
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              icon: Icon(Icons.warning_rounded, size: 128),
+                              title: const Text('Warning'),
+                              content: const Text(
+                                'Using developer options may cause unexpected behavior, and is not supported. Proceed with caution.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('Cancel'),
                                 ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.pop(context),
-                                    child: const Text('Cancel'),
-                                  ),
-                                  TextButton(onPressed: () {
+                                TextButton(
+                                  onPressed: () {
                                     Navigator.pop(context);
                                     Navigator.push(
                                       context,
@@ -1154,9 +1153,12 @@ class _SettingsPageState extends State<SettingsPage> {
                                             ),
                                       ),
                                     );
-                                  }, child: Text("I Understand"))
-                                ],
-                              ));
+                                  },
+                                  child: Text("I Understand"),
+                                ),
+                              ],
+                            ),
+                          );
                         },
 
                         icon: const Icon(Icons.arrow_forward),
