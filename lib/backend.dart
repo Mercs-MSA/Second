@@ -866,10 +866,7 @@ class AttendanceTrackerBackend {
       for (int i = 0; i < (header?.values?[0].length ?? 0); i += 4) {
         final intId = int.tryParse(header?.values?[0][i].toString() ?? "");
         if (intId == null) {
-          logger.e(
-            "Something is wrong with the log sheet header!!! Check formatting remotely. Log update cancelled.",
-          );
-          return;
+          continue;
         }
         remoteIds.add(intId);
       }
