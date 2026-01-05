@@ -1,24 +1,53 @@
 # _SECOND_
 ![icon_144.png](media/logos/icon_144.png)
 
-## Install
+<div class="grid cards" markdown>
 
-### Supported Platforms
-* Raspberry Pi (via [Kiosk Installer](install/rpi.md))
-* [Android](install/android.md) ([APK](https://github.com/Mercs-MSA/Second/releases/latest))
-* iPadOS (coming soon)
-* [Web](https://mercs-msa.github.io/Second/app/) (via GitHub Pages, older versions will **NOT** remain accessible)
+-   :material-google:{ .lg .middle } __Step 1__
 
-### Development Platforms
+    ---
 
-!!! warning
-    These platforms will not receive any support, and are only intended for development purposes.
+    Follow the instructions for setting up a Google Service Account and enabling the Google Sheets API
 
-[GitHub Releases](https://github.com/Mercs-MSA/Second/releases)
+    [:octicons-arrow-right-24: Go](google_setup/account.md)
 
-* Windows x86_64
-* Linux x86_64 and ARM64
-* macOS x86_64 and ARM64
+</div>
+
+<div class="grid cards" markdown>
+
+-   :material-google-spreadsheet:{ .lg .middle } __Step 2__
+
+    ---
+
+    Create a Google Sheet for holding attendance logs, and your member list.
+
+    [:octicons-arrow-right-24: Go](google_setup/sheet.md)
+
+</div>
+
+<div class="grid cards" markdown>
+
+-   :material-download:{ .lg .middle } __Step 3__
+
+    ---
+
+    Install _SECOND_ on your desired platform.
+
+    [:octicons-arrow-right-24: Go](install/index.md)
+
+</div>
+
+<div class="grid cards" markdown>
+
+-   :material-cog:{ .lg .middle } __Step 4__
+
+    ---
+
+    Configure _SECOND_ with your Google Service Account, Google Sheet information, and team customization.
+
+    [:octicons-arrow-right-24: Go](config/index.md)
+
+</div>
 
 ## Configure
 
