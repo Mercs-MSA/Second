@@ -474,6 +474,10 @@
     
       
         
+          
+        
+      
+        
       
         
       
@@ -488,8 +492,9 @@
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
         
           
-          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../install/" class="md-nav__link ">
+              
   
   
   <span class="md-ellipsis">
@@ -503,8 +508,14 @@
   
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
         <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_2_2">
@@ -516,6 +527,8 @@
 
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
             
               
                 
@@ -893,6 +906,33 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../limitations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Limitations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
@@ -1115,6 +1155,7 @@
 <p class="admonition-title">Note</p>
 <p>The default PIN code for accessing configuration options is <code>000000</code></p>
 </div>
+<p><img alt="menu_button.png" src="../media/app/menu_button.png" /></p>
 <p><img alt="settings_option.png" src="../media/app/settings_option.png" /></p>
 <p><img alt="settings.png" src="../media/app/settings.png" /></p>
 <h2 id="device-specific-configuration">Device-Specific Configuration</h2>
@@ -1124,9 +1165,17 @@
 </ul>
 <h2 id="configuration-options">Configuration Options</h2>
 <h3 id="oauth-credentials">OAuth Credentials</h3>
+<div class="admonition danger">
+<p class="admonition-title">Important</p>
+<p>This step is required.</p>
+</div>
 <p>Credentials can be uploaded to the app from a JSON file, provided during the <a href="../google_setup/account/#creating-the-json-credentials-for-second">account setup stage</a>.
 Only importing credentials is supported. It is recommended to use a USB drive storing credentials.</p>
 <h3 id="spreadsheet-id">Spreadsheet ID</h3>
+<div class="admonition danger">
+<p class="admonition-title">Important</p>
+<p>This step is required.</p>
+</div>
 <p>This configuration takes in the sheet ID acquired from the <a href="../google_setup/sheet/">sheet creation step</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
