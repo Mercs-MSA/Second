@@ -1,8 +1,8 @@
 # Installation
 
 ### Supported Platforms
-* Raspberry Pi (via [Kiosk Installer](install/rpi.md))
-* [Android](install/android.md) ([APK](https://github.com/Mercs-MSA/Second/releases/latest))
+* Raspberry Pi (via [Kiosk Installer](rpi.md))
+* [Android](android.md)
 * iPadOS (coming soon)
 * [Web](https://mercs-msa.github.io/Second/app/) (via GitHub Pages, older versions will **NOT** remain accessible)
 

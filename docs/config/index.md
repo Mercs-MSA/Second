@@ -3,6 +3,8 @@
 !!! Note
     The default PIN code for accessing configuration options is `000000`
 
+![menu_button.png](../media/app/menu_button.png)
+
 ![settings_option.png](../media/app/settings_option.png)
 
 ![settings.png](../media/app/settings.png)
@@ -17,10 +19,16 @@ These configuration options are only available on certain platforms;
 
 ### OAuth Credentials
 
+!!! danger "Important"
+    This step is required.
+
 Credentials can be uploaded to the app from a JSON file, provided during the [account setup stage](../google_setup/account.md#creating-the-json-credentials-for-second).
 Only importing credentials is supported. It is recommended to use a USB drive storing credentials.
 
 ### Spreadsheet ID
+
+!!! danger "Important"
+    This step is required.
 
 This configuration takes in the sheet ID acquired from the [sheet creation step](../google_setup/sheet.md).
 

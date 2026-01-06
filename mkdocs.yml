@@ -55,7 +55,7 @@ nav:
         - ui/member.md
   - Hardware Setup:
     - RFID Hardware: rfid.md
-
+  - limitations.md
 extra:
   version:
     provider: mike
