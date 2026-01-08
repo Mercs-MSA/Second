@@ -820,23 +820,21 @@ class _SettingsPageState extends State<SettingsPage> {
     try {
       final json = await _settingsManager.exportToJson();
 
-      // Show save dialog
-      final path = await FilePicker.platform.saveFile(
-        dialogTitle: 'Save Settings',
-        fileName: 'settings.json',
-      );
-
-      if (path == null) return; // user cancelled
-
-      // On web, FilePicker can handle bytes directly
-      if (kIsWeb) {
-        await FilePicker.platform.saveFile(
+      // On web/mobile, FilePicker has handle bytes directly
+      if (kIsWeb || Platform.isAndroid || Platform.isIOS) {
+        final path = await FilePicker.platform.saveFile(
           dialogTitle: 'Save Settings',
           fileName: 'settings.json',
           bytes: Uint8List.fromList(json.codeUnits),
         );
+        if (path == null) return; // user cancelled
       } else {
-        // On desktop/mobile, manually write to the selected path
+        // On desktop, manually write to the selected path
+        final path = await FilePicker.platform.saveFile(
+          dialogTitle: 'Save Settings',
+          fileName: 'settings.json',
+        );
+        if (path == null) return; // user cancelled
         final file = File(path);
         await file.writeAsString(json);
       }
