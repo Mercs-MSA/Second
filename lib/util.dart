@@ -1,5 +1,18 @@
 import 'package:logger/logger.dart';
 
+String initialsFromName(String? name) {
+  if (name == null) return '';
+
+  return name
+      .trim()
+      .split(RegExp(r'\s+'))
+      .where((part) => part.isNotEmpty)
+      .map((part) => part[0])
+      .take(2)
+      .join()
+      .toUpperCase();
+}
+
 String unescapeFormatCharacters(String input) {
   // Map of format characters to their escaped versions
   final escapeMap = {

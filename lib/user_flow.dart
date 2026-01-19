@@ -2,6 +2,7 @@ import 'package:attendance_tracker/backend.dart';
 import 'package:attendance_tracker/passwords.dart';
 import 'package:attendance_tracker/settings.dart';
 import 'package:attendance_tracker/settings_page.dart';
+import 'package:attendance_tracker/util.dart';
 import 'package:flutter/material.dart';
 
 class UserFlow extends StatefulWidget {
@@ -42,7 +43,9 @@ class _UserFlowState extends State<UserFlow> {
     super.initState();
     _selectedLocation = widget.allowedLocations?.first;
     _loadSettings();
-    if ((widget.user.passwordHash == null || !isValidHash(widget.user.passwordHash!)) && widget.user.privilege != MemberPrivilege.student) {
+    if ((widget.user.passwordHash == null ||
+            !isValidHash(widget.user.passwordHash!)) &&
+        widget.user.privilege != MemberPrivilege.student) {
       _isSettingPin = true;
     }
   }
@@ -76,29 +79,33 @@ class _UserFlowState extends State<UserFlow> {
                   ),
                   const SizedBox(height: 16),
                   if (!_isResettingPin)
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: List.generate(
-                      6,
-                      (index) => Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: 20,
-                        height: 20,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: index < _newPin.length
-                              ? Theme.of(context).colorScheme.primary
-                              : Theme.of(context).colorScheme.surfaceContainerHigh,
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        6,
+                        (index) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 4),
+                          width: 20,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: index < _newPin.length
+                                ? Theme.of(context).colorScheme.primary
+                                : Theme.of(
+                                    context,
+                                  ).colorScheme.surfaceContainerHigh,
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   if (_pinError.isNotEmpty)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
                       child: Text(
                         _pinError,
-                        style: TextStyle(color: Theme.of(context).colorScheme.error),
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
                       ),
                     ),
                   if (_isResettingPin)
@@ -125,7 +132,10 @@ class _UserFlowState extends State<UserFlow> {
                           _isResettingPin = true;
                         });
                         try {
-                          await widget.backend.resetPassword(widget.user.id, _newPin);
+                          await widget.backend.resetPassword(
+                            widget.user.id,
+                            _newPin,
+                          );
                           setState(() {
                             _isSettingPin = false;
                             _isResettingPin = false;
@@ -286,12 +296,14 @@ class _UserFlowState extends State<UserFlow> {
               widget.requireAdminPinEntry
           ? _buildPinEntry(context)
           : GestureDetector(
-            onTap: () {isTimerRunning.value = false;},
-            behavior: HitTestBehavior.opaque,
-            child: Column(
-              children: [
-                Expanded(
-                  child: Padding(
+              onTap: () {
+                isTimerRunning.value = false;
+              },
+              behavior: HitTestBehavior.opaque,
+              child: Column(
+                children: [
+                  Expanded(
+                    child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Center(
                         child: Column(
@@ -301,15 +313,13 @@ class _UserFlowState extends State<UserFlow> {
                             CircleAvatar(
                               radius: 128,
                               child: Text(
-                                widget.user.name
-                                    .split(' ')
-                                    .map((part) => part[0])
-                                    .take(2)
-                                    .join(),
+                                initialsFromName(widget.user.name),
                                 style: TextStyle(
                                   fontSize: 84,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).colorScheme.onSurface,
+                                  color: Theme.of(
+                                    context,
+                                  ).colorScheme.onSurface,
                                 ),
                               ),
                             ),
@@ -326,7 +336,10 @@ class _UserFlowState extends State<UserFlow> {
                               )
                             else
                               Padding(
-                                padding: const EdgeInsets.only(left: 24.0, right: 24.0),
+                                padding: const EdgeInsets.only(
+                                  left: 24.0,
+                                  right: 24.0,
+                                ),
                                 child: DropdownButtonFormField<String>(
                                   initialValue: _selectedLocation,
 
@@ -339,7 +352,9 @@ class _UserFlowState extends State<UserFlow> {
                                     border: OutlineInputBorder(),
                                     labelText: "Location",
                                   ),
-                                  items: widget.allowedLocations!.map((location) {
+                                  items: widget.allowedLocations!.map((
+                                    location,
+                                  ) {
                                     return DropdownMenuItem<String>(
                                       value: location,
                                       child: Text(location),
@@ -355,7 +370,8 @@ class _UserFlowState extends State<UserFlow> {
                                 Expanded(
                                   child: FilledButton(
                                     onPressed:
-                                        widget.user.status == AttendanceStatus.out
+                                        widget.user.status ==
+                                            AttendanceStatus.out
                                         ? () {
                                             setState(() {
                                               widget.backend.clockIn(
@@ -384,10 +400,13 @@ class _UserFlowState extends State<UserFlow> {
                                 Expanded(
                                   child: FilledButton(
                                     onPressed:
-                                        widget.user.status == AttendanceStatus.present
+                                        widget.user.status ==
+                                            AttendanceStatus.present
                                         ? () {
                                             setState(() {
-                                              widget.backend.clockOut(widget.user.id);
+                                              widget.backend.clockOut(
+                                                widget.user.id,
+                                              );
                                             });
                                             Navigator.of(context).pop();
                                           }
@@ -411,42 +430,46 @@ class _UserFlowState extends State<UserFlow> {
                         ),
                       ),
                     ),
-                ),
+                  ),
                   ValueListenableBuilder(
                     valueListenable: isTimerRunning,
                     builder: (context, value, child) {
                       if (value) {
-                      return TweenAnimationBuilder<double>(
-                        tween: Tween(begin: 0, end: 1),
-                        duration: const Duration(seconds: 5),
-                        builder: (context, value, child) {
-                          if (value == 1 && isTimerRunning.value) {
-                            Future.microtask(() {
-                              isTimerRunning.value = false;
-                              if (!context.mounted) return false;
-                              if (widget.user.status == AttendanceStatus.present) {
-                                widget.backend.clockOut(widget.user.id);
-                                Navigator.of(context).pop();
-                              } else {
-                                widget.backend.clockIn(widget.user.id, widget.fixed
-                                    ? widget.fixedLocation!
-                                    : _selectedLocation!);
-                                Navigator.of(context).pop();
-                              }
-                              return true;
-                            });
-                          }
-                          return LinearProgressIndicator(value: value);
-                        },
-                      );
+                        return TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: 1),
+                          duration: const Duration(seconds: 5),
+                          builder: (context, value, child) {
+                            if (value == 1 && isTimerRunning.value) {
+                              Future.microtask(() {
+                                isTimerRunning.value = false;
+                                if (!context.mounted) return false;
+                                if (widget.user.status ==
+                                    AttendanceStatus.present) {
+                                  widget.backend.clockOut(widget.user.id);
+                                  Navigator.of(context).pop();
+                                } else {
+                                  widget.backend.clockIn(
+                                    widget.user.id,
+                                    widget.fixed
+                                        ? widget.fixedLocation!
+                                        : _selectedLocation!,
+                                  );
+                                  Navigator.of(context).pop();
+                                }
+                                return true;
+                              });
+                            }
+                            return LinearProgressIndicator(value: value);
+                          },
+                        );
                       } else {
                         return SizedBox(height: 4);
                       }
-                    }
-                  )
-              ],
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
     );
   }
 }
