@@ -1014,12 +1014,16 @@ class _HomePageState extends State<HomePage>
                                               subtitle: Text(
                                                 member.status ==
                                                         AttendanceStatus.out
-                                                    ? member.privilege
-                                                          .toString()
-                                                          .split('.')
-                                                          .last
-                                                          .capitalize()
-                                                    : "${member.privilege.toString().split('.').last.capitalize()} · ${member.location!}",
+                                                    ? member.privilege ==
+                                                              MemberPrivilege
+                                                                  .custom
+                                                          ? "Unrecognized Role"
+                                                          : member.privilege
+                                                                .toString()
+                                                                .split('.')
+                                                                .last
+                                                                .capitalize()
+                                                    : "${member.privilege == MemberPrivilege.custom ? "Unrecognized Role" : member.privilege.toString().split('.').last.capitalize()} · ${member.location!}",
                                               ),
                                               onTap: () {
                                                 beginUserFlow(

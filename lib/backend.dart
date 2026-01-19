@@ -17,7 +17,7 @@ import 'package:logger/logger.dart';
 
 enum AttendanceStatus { present, out }
 
-enum MemberPrivilege { admin, student }
+enum MemberPrivilege { admin, student, mentor, custom }
 
 enum MemberLoggerAction { created, checkIn, checkOut, disabled, error }
 
@@ -133,6 +133,14 @@ class Member {
     };
   }
 
+  static MemberPrivilege privilegeFromName(String name) {
+    return MemberPrivilege.values.cast<MemberPrivilege?>().firstWhere(
+          (e) => e!.name == name.toLowerCase(),
+          orElse: () => MemberPrivilege.custom,
+        ) ??
+        MemberPrivilege.custom;
+  }
+
   static Member fromMap(Map<String, dynamic> data) {
     return Member(
       data['id'] is int
@@ -142,9 +150,7 @@ class Member {
       AttendanceStatus.values.byName((data['status'] as String).toLowerCase()),
       location: data['location'] as String?,
       passwordHash: data['passwordHash'] as String?,
-      privilege: MemberPrivilege.values.byName(
-        (data['privilege'] as String).toLowerCase(),
-      ),
+      privilege: privilegeFromName(data['privilege'] as String),
     );
   }
 }
@@ -601,9 +607,7 @@ class AttendanceTrackerBackend {
           ),
           location: googleMember[4] as String,
           passwordHash: googleMember.elementAtOrNull(5) as String?,
-          privilege: MemberPrivilege.values.byName(
-            (googleMember[2] as String).toLowerCase(),
-          ),
+          privilege: Member.privilegeFromName(googleMember[2] as String),
         ),
       );
     }
