@@ -51,7 +51,7 @@ An automated installation script is provided to simplify the setup process of a 
    
         Configure a unique hostname for your Raspberry Pi.
    
-    * Localisation
+    * Localization
    
         Set your locale, timezone, and keyboard layout.
    
