@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 class UserFlow extends StatefulWidget {
   final Member user;
   final AttendanceTrackerBackend backend;
-  final bool requireAdminPinEntry;
+  final bool fromRfid;
+  final bool requirePinEntry;
   final String? fixedLocation;
   final List<String>? allowedLocations;
   final bool fixed;
@@ -17,7 +18,8 @@ class UserFlow extends StatefulWidget {
     this.user,
     this.backend, {
     super.key,
-    this.requireAdminPinEntry = true,
+    this.fromRfid = false,
+    this.requirePinEntry = true,
     this.fixedLocation,
     this.allowedLocations,
     this.fixed = false,
@@ -45,7 +47,7 @@ class _UserFlowState extends State<UserFlow> {
     _loadSettings();
     if ((widget.user.passwordHash == null ||
             !isValidHash(widget.user.passwordHash!)) &&
-        widget.user.privilege != MemberPrivilege.student) {
+        widget.requirePinEntry) {
       _isSettingPin = true;
     }
   }
@@ -288,12 +290,7 @@ class _UserFlowState extends State<UserFlow> {
         foregroundColor: Theme.of(context).colorScheme.onSurface,
         title: Text(widget.user.name),
       ),
-      body:
-          !_isPinVerified &&
-              widget.user.privilege == MemberPrivilege.admin &&
-              (_settingsManager.getValue<bool>("security.pin.require") ??
-                  true) &&
-              widget.requireAdminPinEntry
+      body: !widget.fromRfid && !_isPinVerified && widget.requirePinEntry
           ? _buildPinEntry(context)
           : GestureDetector(
               onTap: () {
@@ -459,7 +456,10 @@ class _UserFlowState extends State<UserFlow> {
                                 return true;
                               });
                             }
-                            return LinearProgressIndicator(value: value);
+                            return LinearProgressIndicator(
+                              value: value,
+                              year2023: false,
+                            );
                           },
                         );
                       } else {

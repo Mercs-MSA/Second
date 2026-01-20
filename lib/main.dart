@@ -509,7 +509,29 @@ class _HomePageState extends State<HomePage>
           fixedLocation:
               widget.settingsManager.getValue<String>('station.location') ??
               "Shop",
-          requireAdminPinEntry: !fromRfid,
+          fromRfid: fromRfid,
+          requirePinEntry:
+              (user.privilege == MemberPrivilege.admin &&
+                  (widget.settingsManager.getValue<bool>(
+                        "security.pin.require.admin",
+                      ) ??
+                      widget.settingsManager.getDefault<bool>(
+                        "security.pin.require.admin",
+                      )!) ||
+              user.privilege == MemberPrivilege.mentor &&
+                  (widget.settingsManager.getValue<bool>(
+                        "security.pin.require.mentor",
+                      ) ??
+                      widget.settingsManager.getDefault<bool>(
+                        "security.pin.require.mentor",
+                      )!) ||
+              user.privilege == MemberPrivilege.student &&
+                  (widget.settingsManager.getValue<bool>(
+                        "security.pin.require.student",
+                      ) ??
+                      widget.settingsManager.getDefault<bool>(
+                        "security.pin.require.student",
+                      )!)),
         ),
       ),
     ).then((_) {
@@ -893,7 +915,15 @@ class _HomePageState extends State<HomePage>
                             "rfid.reader",
                           ) !=
                           "disable")
-                        RfidTapCard(),
+                        RfidTapCard(
+                          isRfidRequired:
+                              widget.settingsManager.getValue<bool>(
+                                "list.disable",
+                              ) ??
+                              widget.settingsManager.getDefault<bool>(
+                                "list.disable",
+                              )!,
+                        ),
                       if (widget.settingsManager.getValue<String>(
                             "rfid.reader",
                           ) !=
@@ -1026,6 +1056,55 @@ class _HomePageState extends State<HomePage>
                                                     : "${member.privilege == MemberPrivilege.custom ? "Unrecognized Role" : member.privilege.toString().split('.').last.capitalize()} · ${member.location!}",
                                               ),
                                               onTap: () {
+                                                if (widget.settingsManager
+                                                        .getValue<bool>(
+                                                          "list.disable",
+                                                        ) ??
+                                                    widget.settingsManager
+                                                        .getDefault<bool>(
+                                                          "list.disable",
+                                                        )!) {
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (context) {
+                                                      return AlertDialog(
+                                                        title: Text(
+                                                          member.name,
+                                                        ),
+                                                        content: Column(
+                                                          mainAxisSize:
+                                                              MainAxisSize.min,
+                                                          children: [
+                                                            Icon(
+                                                              Icons.block,
+                                                              color:
+                                                                  Theme.of(
+                                                                        context,
+                                                                      )
+                                                                      .colorScheme
+                                                                      .primary,
+                                                              size: 128,
+                                                            ),
+                                                            Text(
+                                                              "RFID badge sign-in is enforced.",
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        actions: [
+                                                          TextButton(
+                                                            onPressed: () {
+                                                              Navigator.of(
+                                                                context,
+                                                              ).pop();
+                                                            },
+                                                            child: Text("OK"),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  );
+                                                  return;
+                                                }
                                                 beginUserFlow(
                                                   context,
                                                   member,

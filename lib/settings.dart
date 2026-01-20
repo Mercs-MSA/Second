@@ -63,7 +63,10 @@ class SettingsManager {
       'station.locations': [],
       'station.location': null,
       'security.pin': '000000',
-      'security.pin.require': true,
+      'security.pin.require.admin': true,
+      'security.pin.require.mentor': false,
+      'security.pin.require.student': false,
+      'list.disable': false,
       'rfid.reader': 'hid',
       'rfid.hid.timeout': 0.2,
       'rfid.hid.eol': 'RETURN',
@@ -137,7 +140,8 @@ class SettingsManager {
 
   Future<Map<String, dynamic>> exportSettings() async {
     Map<String, dynamic> settings = {};
-    for (var key in _defaultSettings.keys) { // IMPORTANT: do not export anything that isn't a setting (ex. offline queues)
+    for (var key in _defaultSettings.keys) {
+      // IMPORTANT: do not export anything that isn't a setting (ex. offline queues)
       settings[key] = getDynamic(key);
     }
     return settings;

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class RfidTapCard extends StatelessWidget {
-  const RfidTapCard({super.key});
+  final bool isRfidRequired;
+
+  const RfidTapCard({super.key, this.isRfidRequired = false});
 
   @override
   Widget build(BuildContext context) {
@@ -29,10 +31,11 @@ class RfidTapCard extends StatelessWidget {
                   "Scan your badge to clock in/out",
                   style: theme.textTheme.bodyLarge,
                 ),
-                Text(
-                  "or manually select your name below",
-                  style: theme.textTheme.bodySmall,
-                ),
+                if (!isRfidRequired)
+                  Text(
+                    "or manually select your name below",
+                    style: theme.textTheme.bodySmall,
+                  ),
               ],
             ),
             Spacer(),
@@ -229,7 +232,7 @@ class AsyncCompleterButton extends StatefulWidget {
     super.key,
     required this.onPressed,
     required this.child,
-    this.progressSize = 18.0,
+    this.progressSize = 24.0,
     this.disableWhileRunning = true,
   });
 
@@ -246,21 +249,20 @@ class _AsyncCompleterButtonState extends State<AsyncCompleterButton> {
       onPressed: _running && widget.disableWhileRunning
           ? null
           : () async {
-        setState(() => _running = true);
+              setState(() => _running = true);
 
-        try {
-          await widget.onPressed();
-        } finally {
-          if (mounted) setState(() => _running = false);
-        }
-      },
+              try {
+                await widget.onPressed();
+              } finally {
+                if (mounted) setState(() => _running = false);
+              }
+            },
       icon: _running
           ? SizedBox(
-        width: widget.progressSize,
-        height: widget.progressSize,
-        child: CircularProgressIndicator(
-        ),
-      )
+              width: widget.progressSize,
+              height: widget.progressSize,
+              child: CircularProgressIndicator(year2023: false),
+            )
           : widget.child,
     );
   }

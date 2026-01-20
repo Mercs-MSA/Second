@@ -948,9 +948,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     ListTile(
-                      tileColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerLow,
                       title: const Text('Google Sheet Spreadsheet ID'),
                       subtitle: const Text(
                         'The ID of the Google Sheet used for attendance tracking.',
@@ -962,58 +959,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     ListTile(
-                      title: const Text("Log Level"),
-                      subtitle: Text(
-                        "Restart required to apply",
-                        style: TextStyle(color: Colors.orange),
-                      ),
-                      leading: const Icon(Icons.info),
-                      trailing: DropdownButton<Level>(
-                        items: Level.values
-                            .where(
-                              (level) =>
-                                  !level.toString().contains('verbose') &&
-                                  !level.toString().contains('wtf') &&
-                                  !level.toString().contains('off'),
-                            )
-                            .map((level) {
-                              return DropdownMenuItem(
-                                value: level,
-                                child: Text(
-                                  level
-                                      .toString()
-                                      .split('.')
-                                      .last
-                                      .toUpperCase(),
-                                ),
-                              );
-                            })
-                            .toList(),
-                        value: Level.values.firstWhere(
-                          (level) =>
-                              level.value ==
-                              (_settingsManager.getValue<int>("app.loglevel") ??
-                                  _settingsManager.getDefault<int>(
-                                    "app.loglevel",
-                                  )),
-                          orElse: () => Level.info,
-                        ),
-                        onChanged: (value) {
-                          if (value != null) {
-                            setState(() {
-                              _settingsManager.setValue(
-                                "app.loglevel",
-                                value.value,
-                              );
-                            });
-                          }
-                        },
-                      ),
-                    ),
-                    ListTile(
-                      tileColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerLow,
                       title: const Text("App Theme"),
                       subtitle: Text(
                         "Mode: ${_currentTheme?.capitalize() ?? ''}, Accent: ${_currentAccentColor?.capitalize() ?? ''}",
@@ -1034,9 +979,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     ListTile(
-                      tileColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerLow,
                       title: const Text("Station Location Options"),
                       subtitle: const Text(
                         "Options for if the station is fixed, or floating, and the locations available.",
@@ -1059,9 +1001,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     ListTile(
-                      tileColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerLow,
                       title: Text("Require PIN for Admin Sign-in"),
                       subtitle: Text(
                         "Request the PIN if an ADMIN user signs in/out without a badge",
@@ -1070,15 +1009,74 @@ class _SettingsPageState extends State<SettingsPage> {
                       trailing: Switch(
                         value:
                             _settingsManager.getValue<bool>(
-                              "security.pin.require",
+                              "security.pin.require.admin",
                             ) ??
                             true,
                         onChanged: (value) {
                           setState(() {
                             _settingsManager.setValue(
-                              "security.pin.require",
+                              "security.pin.require.admin",
                               value,
                             );
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: Text("Require PIN for Mentor Sign-in"),
+                      subtitle: Text(
+                        "Request the PIN if a MENTOR user signs in/out without a badge",
+                      ),
+                      leading: Icon(Icons.pin),
+                      trailing: Switch(
+                        value:
+                            _settingsManager.getValue<bool>(
+                              "security.pin.require.mentor",
+                            ) ??
+                            false,
+                        onChanged: (value) {
+                          setState(() {
+                            _settingsManager.setValue(
+                              "security.pin.require.mentor",
+                              value,
+                            );
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: Text("Require PIN for Student Sign-in"),
+                      subtitle: Text(
+                        "Request the PIN if a STUDENT user signs in/out without a badge",
+                      ),
+                      leading: Icon(Icons.pin),
+                      trailing: Switch(
+                        value:
+                            _settingsManager.getValue<bool>(
+                              "security.pin.require.student",
+                            ) ??
+                            false,
+                        onChanged: (value) {
+                          setState(() {
+                            _settingsManager.setValue(
+                              "security.pin.require.student",
+                              value,
+                            );
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
+                      title: Text("Disable Non-RFID sign in"),
+                      subtitle: Text("Forces members to sign in using RFID."),
+                      leading: Icon(Icons.menu_book),
+                      trailing: Switch(
+                        value:
+                            _settingsManager.getValue<bool>("list.disable") ??
+                            false,
+                        onChanged: (value) {
+                          setState(() {
+                            _settingsManager.setValue("list.disable", value);
                           });
                         },
                       ),
@@ -1093,9 +1091,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     ListTile(
-                      tileColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerLow,
                       title: const Text("Export Settings"),
                       subtitle: const Text(
                         "Your PIN will be saved as PLAIN TEXT",
@@ -1117,9 +1112,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     ListTile(
-                      tileColor: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerLow,
                       title: const Text("Developer Options"),
                       subtitle: const Text("Not recommended for most users"),
                       leading: const Icon(Icons.developer_mode),
