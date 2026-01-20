@@ -6,12 +6,18 @@ import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
+
 class ThemeController {
-  final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.dark);
+  final ValueNotifier<shad.ThemeMode> themeMode = ValueNotifier(
+    shad.ThemeMode.dark,
+  );
   final ValueNotifier<Color> accentColor = ValueNotifier(Colors.blue);
 
   void updateTheme(String mode) {
-    themeMode.value = mode == 'light' ? ThemeMode.light : ThemeMode.dark;
+    themeMode.value = mode == 'light'
+        ? shad.ThemeMode.light
+        : shad.ThemeMode.dark;
   }
 
   void updateAccent(String name) {

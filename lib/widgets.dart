@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
+
 class RfidTapCard extends StatelessWidget {
   final bool isRfidRequired;
 
@@ -8,37 +10,26 @@ class RfidTapCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Card(
-      elevation: 0,
-      shape: RoundedRectangleBorder(
-        side: BorderSide(color: theme.colorScheme.outline, width: 1),
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+    return shad.Card(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(
           children: [
-            Icon(
+            shad.Icon(
               Icons.contactless_outlined,
               size: 64,
               color: theme.colorScheme.primary,
             ),
-            Spacer(),
-            Column(
+            shad.Spacer(),
+            shad.Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Scan your badge to clock in/out",
-                  style: theme.textTheme.bodyLarge,
-                ),
+                shad.Text("Scan your badge to clock in/out").large,
                 if (!isRfidRequired)
-                  Text(
-                    "or manually select your name below",
-                    style: theme.textTheme.bodySmall,
-                  ),
+                  shad.Text("or manually select your name below").small,
               ],
             ),
-            Spacer(),
+            shad.Spacer(),
           ],
         ),
       ),

@@ -12,6 +12,8 @@ import 'package:logger/logger.dart';
 
 import 'dev_opts_page.dart';
 
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
+
 class PinKeypad extends StatelessWidget {
   final Function(String) onKeyPressed;
   final Function() onClear;
@@ -81,18 +83,17 @@ class PinKeypad extends StatelessWidget {
     String label, {
     VoidCallback? onPressed,
   }) {
-    return ElevatedButton(
-      onPressed: onPressed ?? () => onKeyPressed(label),
-      style: ElevatedButton.styleFrom(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-        fixedSize: const Size(64, 64),
-        padding: const EdgeInsets.all(8),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(
-          context,
-        ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+    return SizedBox(
+      width: 64,
+      height: 64,
+      child: shad.OutlineButton(
+        onPressed: onPressed ?? () => onKeyPressed(label),
+        child: Text(
+          label,
+          style: Theme.of(
+            context,
+          ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold),
+        ),
       ),
     );
   }
@@ -160,10 +161,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
-                      'Enter PIN',
-                      style: Theme.of(context).textTheme.headlineMedium,
-                    ),
+                    shad.Text('Enter PIN').h1,
                     const SizedBox(height: 16),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -1006,7 +1004,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         "Request the PIN if an ADMIN user signs in/out without a badge",
                       ),
                       leading: Icon(Icons.pin),
-                      trailing: Switch(
+                      trailing: shad.Switch(
                         value:
                             _settingsManager.getValue<bool>(
                               "security.pin.require.admin",
@@ -1028,7 +1026,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         "Request the PIN if a MENTOR user signs in/out without a badge",
                       ),
                       leading: Icon(Icons.pin),
-                      trailing: Switch(
+                      trailing: shad.Switch(
                         value:
                             _settingsManager.getValue<bool>(
                               "security.pin.require.mentor",
@@ -1050,7 +1048,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         "Request the PIN if a STUDENT user signs in/out without a badge",
                       ),
                       leading: Icon(Icons.pin),
-                      trailing: Switch(
+                      trailing: shad.Switch(
                         value:
                             _settingsManager.getValue<bool>(
                               "security.pin.require.student",
@@ -1070,7 +1068,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       title: Text("Disable Non-RFID sign in"),
                       subtitle: Text("Forces members to sign in using RFID."),
                       leading: Icon(Icons.menu_book),
-                      trailing: Switch(
+                      trailing: shad.Switch(
                         value:
                             _settingsManager.getValue<bool>("list.disable") ??
                             false,

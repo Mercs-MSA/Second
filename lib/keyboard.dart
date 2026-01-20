@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:xml/xml.dart';
 
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
+
 class KeyEvent {
   final String key;
   final DateTime timestamp;
@@ -328,45 +330,25 @@ class CachedKeyWidget extends StatelessWidget {
     );
 
     if (keyData.style == "Primary") {
-      child = FilledButton(
+      child = shad.Button.primary(
         onPressed: onPressed,
-        style: baseStyle.merge(
-          FilledButton.styleFrom(
-            backgroundColor: theme.colorScheme.primary,
-            foregroundColor: theme.colorScheme.onPrimary,
-            textStyle: TextStyle(color: theme.colorScheme.onPrimary),
-          ),
-        ),
         child: scaledContent(keyContent),
       );
     } else if (keyData.style == "Secondary") {
-      child = FilledButton(
+      child = shad.Button.secondary(
         onPressed: onPressed,
-        style: baseStyle.merge(
-          FilledButton.styleFrom(
-            backgroundColor: theme.colorScheme.secondary,
-            foregroundColor: theme.colorScheme.onSecondary,
-            textStyle: TextStyle(color: theme.colorScheme.onSecondary),
-          ),
-        ),
         child: scaledContent(keyContent),
       );
     } else if (keyData.style == "Tertiary") {
-      child = FilledButton(
+      child = shad.Button(
         onPressed: onPressed,
-        style: baseStyle.merge(
-          FilledButton.styleFrom(
-            backgroundColor: theme.colorScheme.tertiary,
-            foregroundColor: theme.colorScheme.onTertiary,
-            textStyle: TextStyle(color: theme.colorScheme.onTertiary),
-          ),
-        ),
+        style: shad.ButtonStyle.destructive(),
         child: scaledContent(keyContent),
       );
     } else {
-      child = ElevatedButton(
+      child = shad.Button(
         onPressed: onPressed,
-        style: baseStyle,
+        style: shad.ButtonStyle.outline(),
         child: scaledContent(keyContent),
       );
     }

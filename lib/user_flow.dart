@@ -5,6 +5,8 @@ import 'package:attendance_tracker/settings_page.dart';
 import 'package:attendance_tracker/util.dart';
 import 'package:flutter/material.dart';
 
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
+
 class UserFlow extends StatefulWidget {
   final Member user;
   final AttendanceTrackerBackend backend;
@@ -305,34 +307,23 @@ class _UserFlowState extends State<UserFlow> {
                       child: Center(
                         child: Column(
                           children: [
-                            Text("ID: ${widget.user.id}"),
-                            Spacer(),
-                            CircleAvatar(
-                              radius: 128,
-                              child: Text(
-                                initialsFromName(widget.user.name),
-                                style: TextStyle(
-                                  fontSize: 84,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
-                                ),
-                              ),
+                            shad.Text("ID: ${widget.user.id}"),
+                            shad.Spacer(),
+                            shad.Avatar(
+                              initials: initialsFromName(widget.user.name),
+                              size: 256,
                             ),
-                            Spacer(),
+                            shad.Spacer(),
                             if (widget.user.status == AttendanceStatus.present)
-                              Text(
+                              shad.Text(
                                 "Leaving: ${widget.user.location}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              )
+                              ).large
                             else if (widget.fixed)
-                              Text(
+                              shad.Text(
                                 "Location: ${widget.fixedLocation}",
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              )
+                              ).large
                             else
-                              Padding(
+                              shad.Padding(
                                 padding: const EdgeInsets.only(
                                   left: 24.0,
                                   right: 24.0,
@@ -359,13 +350,13 @@ class _UserFlowState extends State<UserFlow> {
                                   }).toList(),
                                 ),
                               ),
-                            SizedBox(height: 16),
-                            Row(
+                            shad.SizedBox(height: 16),
+                            shad.Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                SizedBox(width: 16),
-                                Expanded(
-                                  child: FilledButton(
+                                shad.SizedBox(width: 16),
+                                shad.Expanded(
+                                  child: shad.Button.primary(
                                     onPressed:
                                         widget.user.status ==
                                             AttendanceStatus.out
@@ -395,7 +386,7 @@ class _UserFlowState extends State<UserFlow> {
                                 ),
                                 SizedBox(width: 16),
                                 Expanded(
-                                  child: FilledButton(
+                                  child: shad.Button.primary(
                                     onPressed:
                                         widget.user.status ==
                                             AttendanceStatus.present

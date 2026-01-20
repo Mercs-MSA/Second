@@ -17,15 +17,26 @@ import 'package:attendance_tracker/user_flow.dart';
 import 'package:attendance_tracker/util.dart';
 import 'package:attendance_tracker/widgets.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'
+    show
+        showAboutDialog,
+        PopupMenuButton,
+        PopupMenuItem,
+        OutlineInputBorder,
+        InputDecoration,
+        ListTile,
+        Material;
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
+import 'package:shadcn_flutter/shadcn_flutter.dart';
+
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  shad.WidgetsFlutterBinding.ensureInitialized();
   final settings = SettingsManager();
   await settings.init();
 
@@ -79,45 +90,30 @@ class _MyAppState extends State<MyApp> {
           builder: (context, value, child) {
             final adjustedColor = HSVColor.fromColor(
               value,
-            ).withSaturation(0.52).toColor();
+            ).withSaturation(0.76).toColor();
 
-            final darkColorScheme = ColorScheme.fromSeed(
-              seedColor: adjustedColor,
-              brightness: Brightness.dark,
-              primary: adjustedColor,
-            );
+            final colorScheme =
+                shad.ColorSchemes.red(
+                  widget.themeController.themeMode.value,
+                ).copyWith(
+                  primary: () {
+                    return adjustedColor;
+                  },
+                  secondary: () {
+                    return adjustedColor.withLuminance(0.5);
+                  },
+                  mutedForeground: () {
+                    return shad.ColorSchemes.defaultcolor(
+                      widget.themeController.themeMode.value,
+                    ).mutedForeground.withLuminance(0.25);
+                  },
+                );
 
-            final lightColorScheme = ColorScheme.fromSeed(
-              seedColor: adjustedColor,
-              brightness: Brightness.light,
-              primary: adjustedColor,
-            );
+            final theme = shad.ThemeData(colorScheme: colorScheme);
 
-            final darkTheme = ThemeData(
-              colorScheme: darkColorScheme,
-              useMaterial3: true,
-              scaffoldBackgroundColor: darkColorScheme.surface,
-              appBarTheme: AppBarTheme(
-                backgroundColor: darkColorScheme.primary,
-                foregroundColor: darkColorScheme.onPrimary,
-              ),
-            );
-
-            final lightTheme = ThemeData(
-              colorScheme: lightColorScheme,
-              useMaterial3: true,
-              scaffoldBackgroundColor: lightColorScheme.surface,
-              appBarTheme: AppBarTheme(
-                backgroundColor: lightColorScheme.primary,
-                foregroundColor: lightColorScheme.onPrimary,
-              ),
-            );
-
-            return MaterialApp(
+            return shad.ShadcnApp(
               title: 'Second',
-              themeMode: widget.themeController.themeMode.value,
-              darkTheme: darkTheme,
-              theme: lightTheme,
+              theme: theme,
               home: HomePage(
                 widget.themeController,
                 widget.settingsManager,
@@ -433,10 +429,9 @@ class _HomePageState extends State<HomePage>
             mainAxisSize: MainAxisSize.min,
             children: [
               Lottie.asset('assets/animations/fail.json', reverse: true),
-              Text(error, style: Theme.of(rootContext).textTheme.titleLarge),
+              Text(error).xLarge,
             ],
           ),
-          actionsPadding: EdgeInsets.zero,
         );
       },
     );
@@ -458,7 +453,6 @@ class _HomePageState extends State<HomePage>
               Lottie.asset('assets/animations/success.json', reverse: true),
             ],
           ),
-          actionsPadding: EdgeInsets.zero,
           actions: [],
         );
       },
@@ -579,127 +573,153 @@ class _HomePageState extends State<HomePage>
                           return Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                dateString,
-                                style: theme.textTheme.titleMedium,
-                              ),
-                              Text(
-                                timeString,
-                                style: theme.textTheme.titleLarge?.copyWith(
-                                  fontFamily: 'monospace',
-                                ),
-                              ),
+                              Text(dateString).medium,
+                              Text(timeString).mono,
                             ],
                           );
                         },
                       ),
                     ),
                     Spacer(flex: 2),
-                    PopupMenuButton<String>(
-                      icon: Icon(Icons.more_vert),
-                      tooltip: "",
-                      itemBuilder: (context) => [
-                        PopupMenuItem(
-                          value: 'settings',
-                          child: Text('Settings'),
-                          onTap: () {
-                            rfidScanInActive = false;
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SettingsPage(
-                                  widget.themeController,
-                                  widget.logger,
-                                ),
-                              ),
-                            ).then((_) {
-                              // navigate back
-                              rfidScanInActive = true;
-                              setState(() {
-                                _homeScreenImage.value = base64.decode(
-                                  widget.settingsManager.getValue<String>(
-                                        "app.theme.logo",
-                                      ) ??
-                                      widget.settingsManager.getDefault<String>(
-                                        "app.theme.logo",
-                                      )!,
-                                );
-                              });
+                    shad.Builder(
+                      builder: (buttonContext) {
+                        return shad.Button.ghost(
+                          child: Icon(Icons.more_vert),
+                          onPressed: () {
+                            shad.showDropdown(
+                              widthConstraint: PopoverConstraint.anchorMinSize,
+                              context: buttonContext,
+                              builder: (context) {
+                                return shad.DropdownMenu(
+                                  children: [
+                                    shad.MenuButton(
+                                      child: Text('Settings'),
+                                      onPressed: (context) {
+                                        rfidScanInActive = false;
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => SettingsPage(
+                                              widget.themeController,
+                                              widget.logger,
+                                            ),
+                                          ),
+                                        ).then((_) {
+                                          // navigate back
+                                          rfidScanInActive = true;
+                                          setState(() {
+                                            _homeScreenImage.value = base64
+                                                .decode(
+                                                  widget.settingsManager
+                                                          .getValue<String>(
+                                                            "app.theme.logo",
+                                                          ) ??
+                                                      widget.settingsManager
+                                                          .getDefault<String>(
+                                                            "app.theme.logo",
+                                                          )!,
+                                                );
+                                          });
 
-                              // backend
-                              _backend.initialize(
-                                widget.settingsManager.getValue<String>(
-                                      'google.sheet_id',
-                                    ) ??
-                                    '',
-                                widget.settingsManager.getValue<String>(
-                                      'google.oauth_credentials',
-                                    ) ??
-                                    '{}',
-                                pullIntervalActive:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.activePull',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.activePull',
-                                    )!,
-                                pushIntervalActive:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.activePush',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.activePush',
-                                    )!,
-                                pullIntervalInactive:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.inactivePull',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.inactivePull',
-                                    )!,
-                                pushIntervalInactive:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.inactivePush',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.inactivePush',
-                                    )!,
-                                activeCooldownInterval:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.activeCooldown',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.activeCooldown',
-                                    )!,
-                              );
-                            });
+                                          // backend
+                                          _backend.initialize(
+                                            widget.settingsManager
+                                                    .getValue<String>(
+                                                      'google.sheet_id',
+                                                    ) ??
+                                                '',
+                                            widget.settingsManager.getValue<
+                                                  String
+                                                >('google.oauth_credentials') ??
+                                                '{}',
+                                            pullIntervalActive:
+                                                widget.settingsManager.getValue<
+                                                  int
+                                                >(
+                                                  'backend.interval.activePull',
+                                                ) ??
+                                                widget.settingsManager.getDefault<
+                                                  int
+                                                >(
+                                                  'backend.interval.activePull',
+                                                )!,
+                                            pushIntervalActive:
+                                                widget.settingsManager.getValue<
+                                                  int
+                                                >(
+                                                  'backend.interval.activePush',
+                                                ) ??
+                                                widget.settingsManager.getDefault<
+                                                  int
+                                                >(
+                                                  'backend.interval.activePush',
+                                                )!,
+                                            pullIntervalInactive:
+                                                widget.settingsManager.getValue<
+                                                  int
+                                                >(
+                                                  'backend.interval.inactivePull',
+                                                ) ??
+                                                widget.settingsManager.getDefault<
+                                                  int
+                                                >(
+                                                  'backend.interval.inactivePull',
+                                                )!,
+                                            pushIntervalInactive:
+                                                widget.settingsManager.getValue<
+                                                  int
+                                                >(
+                                                  'backend.interval.inactivePush',
+                                                ) ??
+                                                widget.settingsManager.getDefault<
+                                                  int
+                                                >(
+                                                  'backend.interval.inactivePush',
+                                                )!,
+                                            activeCooldownInterval:
+                                                widget.settingsManager.getValue<
+                                                  int
+                                                >(
+                                                  'backend.interval.activeCooldown',
+                                                ) ??
+                                                widget.settingsManager.getDefault<
+                                                  int
+                                                >(
+                                                  'backend.interval.activeCooldown',
+                                                )!,
+                                          );
+                                        });
+                                      },
+                                    ),
+                                    shad.MenuButton(
+                                      child: Text('App Logs'),
+                                      onPressed: (context) {
+                                        rfidScanInActive = false;
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => LoggerView(
+                                              settings: widget.settingsManager,
+                                            ),
+                                          ),
+                                        ).then((_) {
+                                          rfidScanInActive = true;
+                                        });
+                                      },
+                                    ),
+                                    shad.MenuButton(
+                                      child: Text('About'),
+                                      onPressed: (context) {
+                                        showAbout();
+                                      },
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
                           },
-                        ),
-                        PopupMenuItem(
-                          value: 'logger',
-                          child: Text('App Logs'),
-                          onTap: () {
-                            rfidScanInActive = false;
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => LoggerView(
-                                  settings: widget.settingsManager,
-                                ),
-                              ),
-                            ).then((_) {
-                              rfidScanInActive = true;
-                            });
-                          },
-                        ),
-                        PopupMenuItem(
-                          value: 'about',
-                          child: Text('About'),
-                          onTap: () {
-                            showAbout();
-                          },
-                        ),
-                      ],
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -711,21 +731,19 @@ class _HomePageState extends State<HomePage>
                 },
               ),
               Spacer(),
-              Card.filled(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ValueListenableBuilder(
-                    valueListenable: _homeScreenState,
-                    builder: (context, value, child) {
-                      return Row(
-                        children: [
-                          Icon(Icons.circle, color: value.color, size: 18),
-                          SizedBox(width: 8),
-                          Text(value.description),
-                        ],
-                      );
-                    },
-                  ),
+              Card(
+                padding: const EdgeInsets.all(6.0),
+                child: ValueListenableBuilder(
+                  valueListenable: _homeScreenState,
+                  builder: (context, value, child) {
+                    return Row(
+                      children: [
+                        Icon(Icons.circle, color: value.color, size: 18),
+                        SizedBox(width: 8),
+                        Text(value.description),
+                      ],
+                    );
+                  },
                 ),
               ),
             ],
@@ -756,153 +774,163 @@ class _HomePageState extends State<HomePage>
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Card.filled(
-                          child: Padding(
-                            padding: const EdgeInsets.all(6.0),
-                            child: ValueListenableBuilder(
-                              valueListenable: _homeScreenState,
-                              builder: (context, value, child) {
-                                return Row(
-                                  children: [
-                                    Icon(
-                                      Icons.circle,
-                                      color: value.color,
-                                      size: 18,
-                                    ),
-                                    SizedBox(width: 8),
-                                    Text(value.description),
-                                  ],
-                                );
-                              },
-                            ),
+                        Card(
+                          padding: const EdgeInsets.all(6.0),
+                          child: ValueListenableBuilder(
+                            valueListenable: _homeScreenState,
+                            builder: (context, value, child) {
+                              return Row(
+                                children: [
+                                  Icon(
+                                    Icons.circle,
+                                    color: value.color,
+                                    size: 18,
+                                  ),
+                                  SizedBox(width: 8),
+                                  Text(value.description),
+                                ],
+                              );
+                            },
                           ),
                         ),
                         SizedBox(height: 8),
-                        Text(dateString, style: theme.textTheme.titleMedium),
-                        Text(
-                          timeString,
-                          style: theme.textTheme.titleLarge?.copyWith(
-                            fontFamily: 'monospace',
-                          ),
-                        ),
+                        Text(dateString).medium,
+                        Text(timeString).mono,
                       ],
                     );
                   },
                 ),
               ),
               Spacer(),
-              PopupMenuButton<String>(
-                icon: Icon(Icons.more_vert),
-                tooltip: "",
-                itemBuilder: (context) => [
-                  PopupMenuItem(
-                    value: 'settings',
-                    child: Text('Settings'),
-                    onTap: () {
-                      rfidScanInActive = false;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => SettingsPage(
-                            widget.themeController,
-                            widget.logger,
-                          ),
-                        ),
-                      ).then((_) {
-                        // navigate back
-                        rfidScanInActive = true;
-                        setState(() {
-                          _homeScreenImage.value = base64.decode(
-                            widget.settingsManager.getValue<String>(
-                                  "app.theme.logo",
-                                ) ??
-                                widget.settingsManager.getDefault<String>(
-                                  "app.theme.logo",
-                                )!,
-                          );
-                        });
 
-                        // backend
-                        _backend.initialize(
-                          widget.settingsManager.getValue<String>(
-                                'google.sheet_id',
-                              ) ??
-                              '',
-                          widget.settingsManager.getValue<String>(
-                                'google.oauth_credentials',
-                              ) ??
-                              '{}',
-                          pullIntervalActive:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.activePull',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.activePull',
-                              )!,
-                          pushIntervalActive:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.activePush',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.activePush',
-                              )!,
-                          pullIntervalInactive:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.inactivePull',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.inactivePull',
-                              )!,
-                          pushIntervalInactive:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.inactivePush',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.inactivePush',
-                              )!,
-                          activeCooldownInterval:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.activeCooldown',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.activeCooldown',
-                              )!,
-                        );
-                      });
+              shad.Builder(
+                builder: (buttonContext) {
+                  return shad.Button.ghost(
+                    child: Icon(Icons.more_vert),
+                    onPressed: () {
+                      shad.showDropdown(
+                        widthConstraint: PopoverConstraint.anchorMinSize,
+                        context: buttonContext,
+                        builder: (context) {
+                          return shad.DropdownMenu(
+                            children: [
+                              shad.MenuButton(
+                                child: Text('Settings'),
+                                onPressed: (context) {
+                                  rfidScanInActive = false;
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => SettingsPage(
+                                        widget.themeController,
+                                        widget.logger,
+                                      ),
+                                    ),
+                                  ).then((_) {
+                                    // navigate back
+                                    rfidScanInActive = true;
+                                    setState(() {
+                                      _homeScreenImage.value = base64.decode(
+                                        widget.settingsManager.getValue<String>(
+                                              "app.theme.logo",
+                                            ) ??
+                                            widget.settingsManager
+                                                .getDefault<String>(
+                                                  "app.theme.logo",
+                                                )!,
+                                      );
+                                    });
+
+                                    // backend
+                                    _backend.initialize(
+                                      widget.settingsManager.getValue<String>(
+                                            'google.sheet_id',
+                                          ) ??
+                                          '',
+                                      widget.settingsManager.getValue<String>(
+                                            'google.oauth_credentials',
+                                          ) ??
+                                          '{}',
+                                      pullIntervalActive:
+                                          widget.settingsManager.getValue<int>(
+                                            'backend.interval.activePull',
+                                          ) ??
+                                          widget.settingsManager
+                                              .getDefault<int>(
+                                                'backend.interval.activePull',
+                                              )!,
+                                      pushIntervalActive:
+                                          widget.settingsManager.getValue<int>(
+                                            'backend.interval.activePush',
+                                          ) ??
+                                          widget.settingsManager
+                                              .getDefault<int>(
+                                                'backend.interval.activePush',
+                                              )!,
+                                      pullIntervalInactive:
+                                          widget.settingsManager.getValue<int>(
+                                            'backend.interval.inactivePull',
+                                          ) ??
+                                          widget.settingsManager
+                                              .getDefault<int>(
+                                                'backend.interval.inactivePull',
+                                              )!,
+                                      pushIntervalInactive:
+                                          widget.settingsManager.getValue<int>(
+                                            'backend.interval.inactivePush',
+                                          ) ??
+                                          widget.settingsManager
+                                              .getDefault<int>(
+                                                'backend.interval.inactivePush',
+                                              )!,
+                                      activeCooldownInterval:
+                                          widget.settingsManager.getValue<int>(
+                                            'backend.interval.activeCooldown',
+                                          ) ??
+                                          widget.settingsManager.getDefault<
+                                            int
+                                          >('backend.interval.activeCooldown')!,
+                                    );
+                                  });
+                                },
+                              ),
+                              shad.MenuButton(
+                                child: Text('App Logs'),
+                                onPressed: (context) {
+                                  rfidScanInActive = false;
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => LoggerView(
+                                        settings: widget.settingsManager,
+                                      ),
+                                    ),
+                                  ).then((_) {
+                                    rfidScanInActive = true;
+                                  });
+                                },
+                              ),
+                              shad.MenuButton(
+                                child: Text('About'),
+                                onPressed: (context) {
+                                  showAbout();
+                                },
+                              ),
+                            ],
+                          );
+                        },
+                      );
                     },
-                  ),
-                  PopupMenuItem(
-                    value: 'logger',
-                    child: Text('App Logs'),
-                    onTap: () {
-                      rfidScanInActive = false;
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              LoggerView(settings: widget.settingsManager),
-                        ),
-                      ).then((_) {
-                        rfidScanInActive = true;
-                      });
-                    },
-                  ),
-                  PopupMenuItem(
-                    value: 'about',
-                    child: Text('About'),
-                    onTap: () {
-                      showAbout();
-                    },
-                  ),
-                ],
+                  );
+                },
               ),
               SizedBox(width: 8),
             ],
           ),
         ),
       Flexible(
-        child: Material(
-          color: Theme.of(context).colorScheme.surfaceContainerLow,
+        child: shad.Container(
+          color: Theme.of(context).colorScheme.background,
           child: Column(
             children: [
               Expanded(
@@ -930,10 +958,8 @@ class _HomePageState extends State<HomePage>
                           "disable")
                         const SizedBox(height: 8),
                       Expanded(
-                        child: Material(
-                          color: Theme.of(
-                            context,
-                          ).colorScheme.surfaceContainerLow,
+                        child: shad.Container(
+                          // color: Theme.of(context).colorScheme.popover,
                           child: Column(
                             children: [
                               Padding(
@@ -997,64 +1023,11 @@ class _HomePageState extends State<HomePage>
                                     return ValueListenableBuilder(
                                       valueListenable: filteredMembers,
                                       builder: (context, filterValue, child) {
-                                        return ListView.builder(
+                                        return shad.ListView.builder(
                                           itemCount: filterValue.length,
                                           itemBuilder: (context, index) {
                                             final member = filterValue[index];
-                                            return ListTile(
-                                              leading: Stack(
-                                                alignment:
-                                                    Alignment.bottomRight,
-                                                children: [
-                                                  CircleAvatar(
-                                                    child: Builder(
-                                                      builder: (context) {
-                                                        List<String> nameParts =
-                                                            member.name.split(
-                                                              ' ',
-                                                            );
-                                                        nameParts.removeWhere(
-                                                          (val) => val.isEmpty,
-                                                        );
-                                                        return Text(
-                                                          nameParts
-                                                              .map(
-                                                                (part) =>
-                                                                    part[0],
-                                                              )
-                                                              .take(2)
-                                                              .join(),
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                                  Icon(
-                                                    Icons.circle,
-                                                    color:
-                                                        member.status ==
-                                                            AttendanceStatus
-                                                                .present
-                                                        ? Colors.green
-                                                        : Colors.red,
-                                                    size: 12,
-                                                  ),
-                                                ],
-                                              ),
-                                              title: Text(member.name),
-                                              subtitle: Text(
-                                                member.status ==
-                                                        AttendanceStatus.out
-                                                    ? member.privilege ==
-                                                              MemberPrivilege
-                                                                  .custom
-                                                          ? "Unrecognized Role"
-                                                          : member.privilege
-                                                                .toString()
-                                                                .split('.')
-                                                                .last
-                                                                .capitalize()
-                                                    : "${member.privilege == MemberPrivilege.custom ? "Unrecognized Role" : member.privilege.toString().split('.').last.capitalize()} · ${member.location!}",
-                                              ),
+                                            return GestureDetector(
                                               onTap: () {
                                                 if (widget.settingsManager
                                                         .getValue<bool>(
@@ -1111,6 +1084,39 @@ class _HomePageState extends State<HomePage>
                                                   false,
                                                 );
                                               },
+                                              child: shad.Basic(
+                                                padding: EdgeInsets.all(10.0),
+                                                leading: shad.Avatar(
+                                                  initials:
+                                                      shad.Avatar.getInitials(
+                                                        member.name,
+                                                      ),
+                                                  badgeGap: 2,
+                                                  badge: shad.AvatarBadge(
+                                                    color:
+                                                        member.status ==
+                                                            AttendanceStatus
+                                                                .present
+                                                        ? Colors.green
+                                                        : Colors.red,
+                                                  ),
+                                                ),
+                                                title: Text(member.name),
+                                                subtitle: Text(
+                                                  member.status ==
+                                                          AttendanceStatus.out
+                                                      ? member.privilege ==
+                                                                MemberPrivilege
+                                                                    .custom
+                                                            ? "Unrecognized Role"
+                                                            : member.privilege
+                                                                  .toString()
+                                                                  .split('.')
+                                                                  .last
+                                                                  .capitalize()
+                                                      : "${member.privilege == MemberPrivilege.custom ? "Unrecognized Role" : member.privilege.toString().split('.').last.capitalize()} · ${member.location!}",
+                                                ),
+                                              ),
                                             );
                                           },
                                         );
@@ -1130,7 +1136,6 @@ class _HomePageState extends State<HomePage>
               SizedBox(
                 height: 200,
                 child: Container(
-                  color: Theme.of(context).colorScheme.surfaceContainerLowest,
                   child: Center(
                     child: VirtualKeyboard(
                       rootLayoutPath: "assets/layouts/en-US.xml",
@@ -1153,7 +1158,7 @@ class _HomePageState extends State<HomePage>
       child: OrientationBuilder(
         builder: (context, orientation) {
           return Scaffold(
-            body: Column(
+            child: Column(
               children: [
                 Expanded(
                   child: OrientationBuilder(

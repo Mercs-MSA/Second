@@ -4,6 +4,8 @@ import 'package:attendance_tracker/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 
+import 'package:shadcn_flutter/shadcn_flutter.dart' as shad;
+
 class LoggerView extends StatefulWidget {
   const LoggerView({super.key, required this.settings});
 
