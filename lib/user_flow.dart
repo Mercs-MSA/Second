@@ -1,8 +1,8 @@
-import 'package:attendance_tracker/backend.dart';
-import 'package:attendance_tracker/passwords.dart';
-import 'package:attendance_tracker/settings.dart';
-import 'package:attendance_tracker/settings_page.dart';
-import 'package:attendance_tracker/util.dart';
+import 'package:second/backend.dart';
+import 'package:second/passwords.dart';
+import 'package:second/settings.dart';
+import 'package:second/settings_page.dart';
+import 'package:second/util.dart';
 import 'package:flutter/material.dart';
 
 class UserFlow extends StatefulWidget {

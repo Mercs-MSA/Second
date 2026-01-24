@@ -3,19 +3,19 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:async/async.dart';
-import 'package:attendance_tracker/backend.dart';
-import 'package:attendance_tracker/keyboard.dart';
-import 'package:attendance_tracker/log_inst.dart';
-import 'package:attendance_tracker/log_printer.dart';
-import 'package:attendance_tracker/log_view.dart';
-import 'package:attendance_tracker/rfid_event.dart';
-import 'package:attendance_tracker/settings.dart';
-import 'package:attendance_tracker/settings_page.dart';
-import 'package:attendance_tracker/state.dart';
-import 'package:attendance_tracker/string_ext.dart';
-import 'package:attendance_tracker/user_flow.dart';
-import 'package:attendance_tracker/util.dart';
-import 'package:attendance_tracker/widgets.dart';
+import 'package:second/backend.dart';
+import 'package:second/keyboard.dart';
+import 'package:second/log_inst.dart';
+import 'package:second/log_printer.dart';
+import 'package:second/log_view.dart';
+import 'package:second/rfid_event.dart';
+import 'package:second/settings.dart';
+import 'package:second/settings_page.dart';
+import 'package:second/state.dart';
+import 'package:second/string_ext.dart';
+import 'package:second/user_flow.dart';
+import 'package:second/util.dart';
+import 'package:second/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,7 +24,7 @@ import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
-import 'optimization.dart';
+import 'package:second/optimization.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

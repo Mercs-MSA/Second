@@ -1,6 +1,6 @@
-import 'package:attendance_tracker/log_printer.dart';
-import 'package:attendance_tracker/settings.dart';
-import 'package:attendance_tracker/settings_page.dart';
+import 'package:second/log_printer.dart';
+import 'package:second/settings.dart';
+import 'package:second/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 

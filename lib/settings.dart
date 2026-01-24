@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:attendance_tracker/image_util.dart';
-import 'package:attendance_tracker/util.dart';
+import 'package:second/image_util.dart';
+import 'package:second/util.dart';
 import 'package:flutter/material.dart';
 import 'package:logger/logger.dart';
 import 'package:shared_preferences/shared_preferences.dart';

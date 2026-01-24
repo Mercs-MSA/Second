@@ -1,5 +1,5 @@
-import 'package:attendance_tracker/settings.dart';
-import 'package:attendance_tracker/util.dart';
+import 'package:second/settings.dart';
+import 'package:second/util.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';

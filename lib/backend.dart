@@ -4,11 +4,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:async/async.dart';
-import 'package:attendance_tracker/log_inst.dart';
-import 'package:attendance_tracker/passwords.dart';
-import 'package:attendance_tracker/settings.dart';
-import 'package:attendance_tracker/string_ext.dart';
-import 'package:attendance_tracker/util.dart';
+import 'package:second/log_inst.dart';
+import 'package:second/passwords.dart';
+import 'package:second/settings.dart';
+import 'package:second/string_ext.dart';
+import 'package:second/util.dart';
 import 'package:flutter/material.dart';
 import 'package:googleapis/sheets/v4.dart';
 import 'package:googleapis_auth/auth_io.dart';

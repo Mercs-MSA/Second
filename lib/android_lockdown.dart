@@ -1,5 +1,5 @@
 import 'dart:io' show Platform;
-import 'package:attendance_tracker/settings.dart';
+import 'package:second/settings.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:android_intent_plus/android_intent.dart';

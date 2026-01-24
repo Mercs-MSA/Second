@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:attendance_tracker/android_lockdown.dart';
-import 'package:attendance_tracker/settings.dart';
-import 'package:attendance_tracker/string_ext.dart';
+import 'package:second/android_lockdown.dart';
+import 'package:second/auto_checkout.dart';
+import 'package:second/settings.dart';
+import 'package:second/string_ext.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -1110,6 +1111,23 @@ class _SettingsPageState extends State<SettingsPage> {
                       leading: Icon(Icons.contactless),
                       trailing: IconButton(
                         onPressed: () => _editRfidSettings(context),
+                        icon: const Icon(Icons.edit),
+                      ),
+                    ),
+                    ListTile(
+                      title: const Text("Auto Checkout"),
+                      subtitle: const Text(
+                        "Options for configuring auto-checkout per day of the week",
+                      ),
+                      leading: const Icon(Icons.access_time_filled),
+                      trailing: IconButton(
+                        onPressed: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (context) => AutoClockOutSettings(),
+                            ),
+                          );
+                        },
                         icon: const Icon(Icons.edit),
                       ),
                     ),
