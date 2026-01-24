@@ -9,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class ThemeController {
   final ValueNotifier<ThemeMode> themeMode = ValueNotifier(ThemeMode.dark);
   final ValueNotifier<Color> accentColor = ValueNotifier(Colors.blue);
+  final ValueNotifier<bool> lowResouceMode = ValueNotifier(false);
 
   void updateTheme(String mode) {
     themeMode.value = mode == 'light' ? ThemeMode.light : ThemeMode.dark;
@@ -24,6 +25,10 @@ class ThemeController {
       'purple': Colors.purpleAccent[100],
     };
     accentColor.value = colorMap[name] ?? Colors.blue;
+  }
+
+  void updateLowResourceMode(bool isLowResource) {
+    lowResouceMode.value = isLowResource;
   }
 }
 
@@ -59,6 +64,7 @@ class SettingsManager {
       'app.theme.logo': await assetPngToBase64(
         "assets/icons/punch_clock_240.png",
       ),
+      'app.lowresources': false,
       'station.fixed': true,
       'station.locations': [],
       'station.location': null,

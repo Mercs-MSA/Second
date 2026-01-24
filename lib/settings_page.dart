@@ -979,6 +979,29 @@ class _SettingsPageState extends State<SettingsPage> {
                       ),
                     ),
                     ListTile(
+                      title: Text("Low-Resource Mode"),
+                      subtitle: Text(
+                        "Limited animations and effects for low-resource devices",
+                      ),
+                      leading: Icon(Icons.bolt),
+                      trailing: Switch(
+                        value:
+                            _settingsManager.getValue<bool>(
+                              "app.lowresources",
+                            ) ??
+                            false,
+                        onChanged: (value) {
+                          setState(() {
+                            _settingsManager.setValue(
+                              'app.lowresources',
+                              value,
+                            );
+                            widget.themeController.updateLowResourceMode(value);
+                          });
+                        },
+                      ),
+                    ),
+                    ListTile(
                       title: const Text("Station Location Options"),
                       subtitle: const Text(
                         "Options for if the station is fixed, or floating, and the locations available.",

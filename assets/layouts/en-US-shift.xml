@@ -46,6 +46,5 @@
         <Key symbol=" " keystroke=" " width="5.0"/>
         <!-- Period key is now '>' when shifted -->
         <Key symbol="&gt;" keystroke="&gt;" altKeystroke="." width="1.0"/>
-        <Key symbol="Return" keystroke="return" width="1.5" style="Primary"/>
     </Row>
 </KeyboardLayout>

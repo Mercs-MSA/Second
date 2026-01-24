@@ -24,6 +24,8 @@ import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'optimization.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final settings = SettingsManager();
@@ -72,57 +74,86 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder(
-      valueListenable: widget.themeController.themeMode,
+      valueListenable: widget.themeController.lowResouceMode,
       builder: (context, value, child) {
         return ValueListenableBuilder(
-          valueListenable: widget.themeController.accentColor,
+          valueListenable: widget.themeController.themeMode,
           builder: (context, value, child) {
-            final adjustedColor = HSVColor.fromColor(
-              value,
-            ).withSaturation(0.52).toColor();
+            return ValueListenableBuilder(
+              valueListenable: widget.themeController.accentColor,
+              builder: (context, value, child) {
+                final adjustedColor = HSVColor.fromColor(
+                  value,
+                ).withSaturation(0.52).toColor();
 
-            final darkColorScheme = ColorScheme.fromSeed(
-              seedColor: adjustedColor,
-              brightness: Brightness.dark,
-              primary: adjustedColor,
-            );
+                final darkColorScheme = ColorScheme.fromSeed(
+                  seedColor: adjustedColor,
+                  brightness: Brightness.dark,
+                  primary: adjustedColor,
+                );
 
-            final lightColorScheme = ColorScheme.fromSeed(
-              seedColor: adjustedColor,
-              brightness: Brightness.light,
-              primary: adjustedColor,
-            );
+                final lightColorScheme = ColorScheme.fromSeed(
+                  seedColor: adjustedColor,
+                  brightness: Brightness.light,
+                  primary: adjustedColor,
+                );
 
-            final darkTheme = ThemeData(
-              colorScheme: darkColorScheme,
-              useMaterial3: true,
-              scaffoldBackgroundColor: darkColorScheme.surface,
-              appBarTheme: AppBarTheme(
-                backgroundColor: darkColorScheme.primary,
-                foregroundColor: darkColorScheme.onPrimary,
-              ),
-            );
+                final darkTheme = ThemeData(
+                  colorScheme: darkColorScheme,
+                  useMaterial3: true,
+                  scaffoldBackgroundColor: darkColorScheme.surface,
+                  appBarTheme: AppBarTheme(
+                    backgroundColor: darkColorScheme.primary,
+                    foregroundColor: darkColorScheme.onPrimary,
+                  ),
+                  pageTransitionsTheme:
+                      widget.themeController.lowResouceMode.value
+                      ? PageTransitionsTheme(
+                          builders: {
+                            for (final platform in TargetPlatform.values)
+                              platform: const NoTransitionsBuilder(),
+                          },
+                        )
+                      : null,
+                  splashFactory: widget.themeController.lowResouceMode.value
+                      ? NoSplash.splashFactory
+                      : null,
+                );
 
-            final lightTheme = ThemeData(
-              colorScheme: lightColorScheme,
-              useMaterial3: true,
-              scaffoldBackgroundColor: lightColorScheme.surface,
-              appBarTheme: AppBarTheme(
-                backgroundColor: lightColorScheme.primary,
-                foregroundColor: lightColorScheme.onPrimary,
-              ),
-            );
+                final lightTheme = ThemeData(
+                  colorScheme: lightColorScheme,
+                  useMaterial3: true,
+                  scaffoldBackgroundColor: lightColorScheme.surface,
+                  appBarTheme: AppBarTheme(
+                    backgroundColor: lightColorScheme.primary,
+                    foregroundColor: lightColorScheme.onPrimary,
+                  ),
+                  pageTransitionsTheme:
+                      widget.themeController.lowResouceMode.value
+                      ? PageTransitionsTheme(
+                          builders: {
+                            for (final platform in TargetPlatform.values)
+                              platform: const NoTransitionsBuilder(),
+                          },
+                        )
+                      : null,
+                  splashFactory: widget.themeController.lowResouceMode.value
+                      ? NoSplash.splashFactory
+                      : null,
+                );
 
-            return MaterialApp(
-              title: 'Second',
-              themeMode: widget.themeController.themeMode.value,
-              darkTheme: darkTheme,
-              theme: lightTheme,
-              home: HomePage(
-                widget.themeController,
-                widget.settingsManager,
-                widget.logger,
-              ),
+                return MaterialApp(
+                  title: 'Second',
+                  themeMode: widget.themeController.themeMode.value,
+                  darkTheme: darkTheme,
+                  theme: lightTheme,
+                  home: HomePage(
+                    widget.themeController,
+                    widget.settingsManager,
+                    widget.logger,
+                  ),
+                );
+              },
             );
           },
         );

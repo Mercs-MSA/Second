@@ -598,6 +598,17 @@ class AttendanceTrackerBackend {
         );
         continue;
       }
+      if (googleMember[0].toString().isEmpty) {
+        logger.w(
+          "Malformed user detected, skipping user addition, ID is empty",
+        );
+        continue;
+      } else if (googleMember[1].toString().isEmpty) {
+        logger.w(
+          "Malformed user detected, skipping user addition, name is empty",
+        );
+        continue;
+      }
       newMembers.add(
         Member(
           int.tryParse(googleMember[0] as String) ?? -1,
@@ -658,6 +669,12 @@ class AttendanceTrackerBackend {
     }
     List<int> memberIds = [];
     for (var item in memberIdTableResponse.values!) {
+      if (item.isEmpty) {
+        logger.w(
+          "Malformed user ID detected in member ID table, skipping member update, ID is empty",
+        );
+        continue;
+      }
       memberIds.add(int.parse(item[0].toString()));
     }
 

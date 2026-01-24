@@ -42,6 +42,5 @@
         <Key symbol="," keystroke="," altKeystroke="&lt;" width="1.0"/>
         <Key symbol="" keystroke=" " width="5.0"/>
         <Key symbol="." keystroke="." altKeystroke="&gt;" width="1.0"/>
-        <Key symbol="Return" keystroke="return" width="1.5" style="Primary"/>
     </Row>
 </KeyboardLayout>

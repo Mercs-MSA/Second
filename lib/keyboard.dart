@@ -324,6 +324,7 @@ class CachedKeyWidget extends StatelessWidget {
       shape: WidgetStateProperty.all(
         RoundedRectangleBorder(borderRadius: BorderRadius.circular(4.0)),
       ),
+      textStyle: WidgetStateProperty.all(TextStyle(fontSize: 18)),
       splashFactory: NoSplash.splashFactory,
     );
 
@@ -334,7 +335,10 @@ class CachedKeyWidget extends StatelessWidget {
           FilledButton.styleFrom(
             backgroundColor: theme.colorScheme.primary,
             foregroundColor: theme.colorScheme.onPrimary,
-            textStyle: TextStyle(color: theme.colorScheme.onPrimary),
+            textStyle: TextStyle(
+              fontSize: 16,
+              color: theme.colorScheme.onPrimary,
+            ),
           ),
         ),
         child: scaledContent(keyContent),
@@ -346,7 +350,10 @@ class CachedKeyWidget extends StatelessWidget {
           FilledButton.styleFrom(
             backgroundColor: theme.colorScheme.secondary,
             foregroundColor: theme.colorScheme.onSecondary,
-            textStyle: TextStyle(color: theme.colorScheme.onSecondary),
+            textStyle: TextStyle(
+              fontSize: 16,
+              color: theme.colorScheme.onSecondary,
+            ),
           ),
         ),
         child: scaledContent(keyContent),
@@ -358,7 +365,10 @@ class CachedKeyWidget extends StatelessWidget {
           FilledButton.styleFrom(
             backgroundColor: theme.colorScheme.tertiary,
             foregroundColor: theme.colorScheme.onTertiary,
-            textStyle: TextStyle(color: theme.colorScheme.onTertiary),
+            textStyle: TextStyle(
+              fontSize: 16,
+              color: theme.colorScheme.onTertiary,
+            ),
           ),
         ),
         child: scaledContent(keyContent),
