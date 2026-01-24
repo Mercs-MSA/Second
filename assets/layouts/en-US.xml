@@ -39,7 +39,6 @@
     </Row>
 
     <Row type="keyRow">
-        <Key symbol="123" layoutLink="NumSym.xml" width="1.5" style="Secondary"/>
         <Key symbol="," keystroke="," altKeystroke="&lt;" width="1.0"/>
         <Key symbol="" keystroke=" " width="5.0"/>
         <Key symbol="." keystroke="." altKeystroke="&gt;" width="1.0"/>

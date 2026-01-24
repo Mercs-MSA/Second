@@ -41,7 +41,6 @@
     </Row>
 
     <Row type="keyRow">
-        <Key symbol="123" layoutLink="NumSym.xml" width="1.5" style="Secondary"/>
         <!-- Comma key is now '<' when shifted -->
         <Key symbol="&lt;" keystroke="&lt;" altKeystroke="," width="1.0"/>
         <Key symbol=" " keystroke=" " width="5.0"/>
