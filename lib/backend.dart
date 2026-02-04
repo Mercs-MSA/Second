@@ -185,7 +185,7 @@ class MemberLogEntry extends SerializableItem {
     return {
       'memberId': memberId,
       'action': action.name,
-      'time': time.toIso8601String(),
+      'time': "=EPOCHTODATE(${time.toUtc().millisecondsSinceEpoch}, 2)",
       'location': location,
     };
   }
@@ -226,7 +226,10 @@ class TimeClockEvent extends SerializableItem {
 
   @override
   Map<String, dynamic> serialize() {
-    return {'memberId': memberId, 'time': time.toIso8601String()};
+    return {
+      'memberId': memberId,
+      'time': "=EPOCHTODATE(${time.toUtc().millisecondsSinceEpoch}, 2)",
+    };
   }
 }
 
@@ -852,7 +855,9 @@ class AttendanceTrackerBackend {
         newMemberHeader[1].add("Location");
         newMemberHeader[1].add("Action");
         newMemberHeader[1].add("");
-        newMemberHeader[2].add(DateTime.now().toUtc().toIso8601String());
+        newMemberHeader[2].add(
+          "=EPOCHTODATE(${DateTime.now().toUtc().millisecondsSinceEpoch}, 2)",
+        );
         newMemberHeader[2].add("NULL");
         newMemberHeader[2].add("CREATED");
         newMemberHeader[2].add("");
@@ -916,7 +921,11 @@ class AttendanceTrackerBackend {
             "=MAX(FILTER(ROW(${columnToReference(nextRefUpdateIndex)}3:${columnToReference(nextRefUpdateIndex + 2)}), BYROW(${columnToReference(nextRefUpdateIndex)}3:${columnToReference(nextRefUpdateIndex + 2)}, LAMBDA(r, COUNTA(r) > 0))))",
           ],
           ["Timestamp", "Location", "Action"],
-          [DateTime.now().toUtc().toIso8601String(), "NULL", "CREATED"],
+          [
+            "=EPOCHTODATE(${DateTime.now().toUtc().millisecondsSinceEpoch}, 2)",
+            "NULL",
+            "CREATED",
+          ],
         ];
 
         final origin = "$logSheetName!${nextUpdateRef}2"; // starting cell
@@ -1042,7 +1051,7 @@ class AttendanceTrackerBackend {
             range: logOrigin,
             values: [
               [
-                entry.time.toUtc().toIso8601String(),
+                "=EPOCHTODATE(${entry.time.toUtc().millisecondsSinceEpoch}, 2)",
                 entry.location,
                 entry.action.name.toUpperCase(),
               ],
