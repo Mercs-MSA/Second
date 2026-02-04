@@ -3,6 +3,16 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
+import 'package:lottie/lottie.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
+
 import 'package:async/async.dart';
 import 'package:second/backend.dart';
 import 'package:second/keyboard.dart';
@@ -17,14 +27,6 @@ import 'package:second/string_ext.dart';
 import 'package:second/user_flow.dart';
 import 'package:second/util.dart';
 import 'package:second/widgets.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:logger/logger.dart';
-import 'package:lottie/lottie.dart';
-import 'package:package_info_plus/package_info_plus.dart';
-
 import 'package:second/optimization.dart';
 
 void main() async {
@@ -498,17 +500,30 @@ class _HomePageState extends State<HomePage>
   }
 
   void showAbout() {
-    showAboutDialog(
+    showAdaptiveAboutDialog(
       context: context,
       applicationName: 'Second',
       applicationVersion:
           "${packageInfo?.version} (Build #${packageInfo?.buildNumber})",
       applicationIcon: Image.asset(
         "assets/icons/icon_96.png",
-        width: 64,
-        height: 64,
+        width: 96,
+        height: 96,
       ),
-      children: [Text("An FRC Attendance Tracker")],
+      applicationLegalese: "Copyright (c) 2025-2026 Kevin Ahr",
+      children: [
+        Text("An FRC/FTC Attendance Tracker"),
+        ListTile(
+          leading: Icon(Icons.gavel),
+          title: Text("License"),
+          subtitle: Text("GPL-3.0"),
+          onTap: () {
+            launchUrl(
+              Uri.parse("https://www.gnu.org/licenses/gpl-3.0.en.html"),
+            );
+          },
+        ),
+      ],
     );
   }
 
