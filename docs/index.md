@@ -2,7 +2,7 @@
 
 ![icon_144.png](media/logos/icon_144.png)
 
-_SECOND_ is an app to track the attendance of FRC students, mentors, coaches and volunteers to/from events for the purpose of being able to note hours given.
+_SECOND_ is an app to track the attendance of students, mentors, coaches and volunteers to/from events for the purpose of being able to note hours given.
 
 Members and activity logs are stored and managed on a Google Sheet, eliminating the need for complex databases. The app will continue to function locally if the internet connection is lost, and will sync changes when the connection is restored.
 

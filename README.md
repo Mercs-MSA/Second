@@ -2,6 +2,6 @@
 
 # Second
 
-An FRC attendance tracker
+An attendance tracking system designed for FRC and FTC teams.
 
 Read the docs [here](https://mercs-msa.github.io/Second/)
