@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:async/async.dart';
 import 'package:second/backend.dart';
@@ -279,7 +280,7 @@ class _HomePageState extends State<HomePage>
 
     // home screen state
     _homeScreenState = ValueNotifier(AppState.initial);
-    Timer.periodic(const Duration(seconds: 5), (Timer timer) {
+    Timer.periodic(const Duration(seconds: 3), (Timer timer) {
       _homeScreenState.value = _getStatus();
     });
 
@@ -575,9 +576,9 @@ class _HomePageState extends State<HomePage>
 
   AppState _getStatus() {
     if (_backend.googleConnected.value == false) {
-      return AppState(Colors.amber, "Connection Lost");
+      return AppState(Colors.amber, "Connection Lost", 0);
     } else {
-      return AppState(Colors.green, "System Online");
+      return AppState(Colors.green, "System Online", _backend.getPushLength());
     }
   }
 
@@ -753,6 +754,14 @@ class _HomePageState extends State<HomePage>
                           Icon(Icons.circle, color: value.color, size: 18),
                           SizedBox(width: 8),
                           Text(value.description),
+                          if (value.pushCount > 0) Spacer(),
+                          if (value.pushCount > 0)
+                            Transform.rotate(
+                              angle: -pi / 4,
+                              child: Icon(Icons.double_arrow_rounded, size: 18),
+                            ),
+                          if (value.pushCount > 0)
+                            Text(value.pushCount.toString()),
                         ],
                       );
                     },
@@ -802,6 +811,18 @@ class _HomePageState extends State<HomePage>
                                     ),
                                     SizedBox(width: 8),
                                     Text(value.description),
+                                    if (value.pushCount > 0)
+                                      SizedBox(width: 12),
+                                    if (value.pushCount > 0)
+                                      Transform.rotate(
+                                        angle: -pi / 4,
+                                        child: Icon(
+                                          Icons.double_arrow_rounded,
+                                          size: 18,
+                                        ),
+                                      ),
+                                    if (value.pushCount > 0)
+                                      Text(value.pushCount.toString()),
                                   ],
                                 );
                               },

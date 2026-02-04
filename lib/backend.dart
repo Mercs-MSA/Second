@@ -1203,6 +1203,10 @@ class AttendanceTrackerBackend {
     await _updateMembers();
   }
 
+  int getPushLength() {
+    return _clockInQueue.toList().length + _clockOutQueue.toList().length;
+  }
+
   void _reactivateCooldown() {
     bool wasActive = pullDuration == pullDurationActive;
     pullDuration = pullDurationActive;
