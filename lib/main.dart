@@ -500,7 +500,7 @@ class _HomePageState extends State<HomePage>
   }
 
   void showAbout() {
-    showAdaptiveAboutDialog(
+    showAboutDialog(
       context: context,
       applicationName: 'Second',
       applicationVersion:
