@@ -1,23 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:second/backend.dart';
+import 'package:second/config_table.dart';
 
 class AutoClockOutSettings extends StatefulWidget {
-  const AutoClockOutSettings({super.key});
+  final AttendanceTrackerBackend backend;
+  const AutoClockOutSettings({super.key, required this.backend});
 
   @override
   State<AutoClockOutSettings> createState() => _AutoClockOutSettingsState();
 }
 
 class _AutoClockOutSettingsState extends State<AutoClockOutSettings> {
+  bool _isLoading = false;
   // Data structure to hold independent settings for each day
   final Map<String, DayConfig> _configs = {
+    'Sunday': DayConfig(),
     'Monday': DayConfig(),
     'Tuesday': DayConfig(),
     'Wednesday': DayConfig(),
     'Thursday': DayConfig(),
     'Friday': DayConfig(),
     'Saturday': DayConfig(),
-    'Sunday': DayConfig(),
   };
+
+  @override
+  void initState() {
+    super.initState();
+    final entries = widget.backend.timingsTable?.entries ?? [];
+    const days = [
+      'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+    ];
+
+    for (var entry in entries) {
+      if (entry.dayOfWeek >= 0 && entry.dayOfWeek < days.length) {
+        final day = days[entry.dayOfWeek];
+        _configs[day] = DayConfig(
+          isEnabled: entry.enable,
+          triggerTime: TimeOfDay.fromDateTime(entry.checkTime),
+          outTime: TimeOfDay.fromDateTime(entry.applyTime),
+          isPreviousDay: entry.backdate,
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -131,9 +162,9 @@ class _AutoClockOutSettingsState extends State<AutoClockOutSettings> {
       child: Row(
         children: [
           Expanded(
-            child: TextButton(
+            child: OutlinedButton(
               onPressed: () => Navigator.pop(context),
-              child: const Text("CANCEL"),
+              child: const Text("Cancel"),
             ),
           ),
           const SizedBox(width: 16),
@@ -143,11 +174,77 @@ class _AutoClockOutSettingsState extends State<AutoClockOutSettings> {
                 backgroundColor: Theme.of(context).colorScheme.primary,
                 foregroundColor: Theme.of(context).colorScheme.onPrimary,
               ),
-              onPressed: () {
-                // Perform Save Logic here
-                Navigator.pop(context);
-              },
-              child: const Text("SAVE CHANGES"),
+              onPressed: _isLoading
+                  ? null
+                  : () async {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      try {
+                        final table = widget.backend.timingsTable;
+                        if (table != null) {
+                          const days = [
+                            'Sunday',
+                            'Monday',
+                            'Tuesday',
+                            'Wednesday',
+                            'Thursday',
+                            'Friday',
+                            'Saturday',
+                          ];
+                          List<CheckoutConfigEntry> newEntries = [];
+                          for (int i = 0; i < days.length; i++) {
+                            final day = days[i];
+                            final config = _configs[day]!;
+                            final now = DateTime.now();
+                            newEntries.add(
+                              CheckoutConfigEntry(
+                                i,
+                                DateTime(
+                                  now.year,
+                                  now.month,
+                                  now.day,
+                                  config.triggerTime.hour,
+                                  config.triggerTime.minute,
+                                ),
+                                DateTime(
+                                  now.year,
+                                  now.month,
+                                  now.day,
+                                  config.outTime.hour,
+                                  config.outTime.minute,
+                                ),
+                                config.isPreviousDay,
+                                config.isEnabled,
+                              ),
+                            );
+                          }
+                          await table.setEntries(newEntries);
+                        }
+                        if (mounted) Navigator.pop(context);
+                      } catch (e) {
+                        if (mounted) {
+                          setState(() {
+                            _isLoading = false;
+                          });
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text("Error saving settings: $e"),
+                              backgroundColor: Theme.of(
+                                context,
+                              ).colorScheme.error,
+                            ),
+                          );
+                        }
+                      }
+                    },
+              child: _isLoading
+                  ? const SizedBox(
+                      height: 20,
+                      width: 20,
+                      child: CircularProgressIndicator(),
+                    )
+                  : const Text("Save"),
             ),
           ),
         ],
@@ -179,8 +276,15 @@ class _AutoClockOutSettingsState extends State<AutoClockOutSettings> {
 
 // Simple data model for independent daily settings
 class DayConfig {
-  bool isEnabled = true;
-  TimeOfDay triggerTime = const TimeOfDay(hour: 3, minute: 0);
-  TimeOfDay outTime = const TimeOfDay(hour: 21, minute: 0);
-  bool isPreviousDay = true;
+  bool isEnabled;
+  TimeOfDay triggerTime;
+  TimeOfDay outTime;
+  bool isPreviousDay;
+
+  DayConfig({
+    this.isEnabled = true,
+    this.triggerTime = const TimeOfDay(hour: 3, minute: 0),
+    this.outTime = const TimeOfDay(hour: 21, minute: 0),
+    this.isPreviousDay = true,
+  });
 }

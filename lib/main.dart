@@ -364,39 +364,43 @@ class _HomePageState extends State<HomePage>
       widget.settingsManager.getValue<String>('google.oauth_credentials') ??
           '{}',
       pullIntervalActive:
-      widget.settingsManager.getValue<int>('backend.interval.activePull') ??
+          widget.settingsManager.getValue<int>('backend.interval.activePull') ??
           widget.settingsManager.getDefault<int>(
             'backend.interval.activePull',
           )!,
       pushIntervalActive:
-      widget.settingsManager.getValue<int>('backend.interval.activePush') ??
+          widget.settingsManager.getValue<int>('backend.interval.activePush') ??
           widget.settingsManager.getDefault<int>(
             'backend.interval.activePush',
           )!,
       pullIntervalInactive:
-      widget.settingsManager.getValue<int>(
-        'backend.interval.inactivePull',
-      ) ??
+          widget.settingsManager.getValue<int>(
+            'backend.interval.inactivePull',
+          ) ??
           widget.settingsManager.getDefault<int>(
             'backend.interval.inactivePull',
           )!,
       pushIntervalInactive:
-      widget.settingsManager.getValue<int>(
-        'backend.interval.inactivePush',
-      ) ??
+          widget.settingsManager.getValue<int>(
+            'backend.interval.inactivePush',
+          ) ??
           widget.settingsManager.getDefault<int>(
             'backend.interval.inactivePush',
           )!,
       activeCooldownInterval:
-      widget.settingsManager.getValue<int>(
-        'backend.interval.activeCooldown',
-      ) ??
+          widget.settingsManager.getValue<int>(
+            'backend.interval.activeCooldown',
+          ) ??
           widget.settingsManager.getDefault<int>(
             'backend.interval.activeCooldown',
           )!,
-      configPullInterval: widget.settingsManager.getValue<int>(
-        'backend.interval.configsReload',
-      ) ?? widget.settingsManager.getDefault<int>('backend.interval.configsReload')!,
+      configPullInterval:
+          widget.settingsManager.getValue<int>(
+            'backend.interval.configsReload',
+          ) ??
+          widget.settingsManager.getDefault<int>(
+            'backend.interval.configsReload',
+          )!,
     );
   }
 
@@ -664,6 +668,7 @@ class _HomePageState extends State<HomePage>
                                 builder: (context) => SettingsPage(
                                   widget.themeController,
                                   widget.logger,
+                                  _backend,
                                 ),
                               ),
                             ).then((_) {
@@ -836,6 +841,7 @@ class _HomePageState extends State<HomePage>
                           builder: (context) => SettingsPage(
                             widget.themeController,
                             widget.logger,
+                            _backend,
                           ),
                         ),
                       ).then((_) {

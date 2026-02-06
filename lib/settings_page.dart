@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:second/android_lockdown.dart';
 import 'package:second/auto_checkout.dart';
+import 'package:second/backend.dart';
 import 'package:second/settings.dart';
 import 'package:second/string_ext.dart';
 import 'package:file_picker/file_picker.dart';
@@ -100,10 +101,16 @@ class PinKeypad extends StatelessWidget {
 }
 
 class SettingsPage extends StatefulWidget {
-  const SettingsPage(this.themeController, this.logger, {super.key});
+  const SettingsPage(
+    this.themeController,
+    this.logger,
+    this.backend, {
+    super.key,
+  });
 
   final ThemeController themeController;
   final Logger logger;
+  final AttendanceTrackerBackend backend;
 
   @override
   State<SettingsPage> createState() => _SettingsPageState();
@@ -1124,7 +1131,8 @@ class _SettingsPageState extends State<SettingsPage> {
                         onPressed: () {
                           Navigator.of(context).push(
                             MaterialPageRoute(
-                              builder: (context) => AutoClockOutSettings(),
+                              builder: (context) =>
+                                  AutoClockOutSettings(backend: widget.backend),
                             ),
                           );
                         },

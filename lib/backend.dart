@@ -15,6 +15,8 @@ import 'package:googleapis_auth/auth_io.dart';
 import 'package:http/http.dart' as http;
 import 'package:logger/logger.dart';
 
+import 'config_table.dart';
+
 enum AttendanceStatus { present, out }
 
 enum MemberPrivilege { admin, student, mentor, custom }
@@ -315,6 +317,8 @@ class AttendanceTrackerBackend {
   SheetsApi? _sheetsClient;
   Spreadsheet? _spreadsheet;
 
+  CheckoutConfigurationTable? timingsTable;
+
   // tasks
   AdjustableRestartableTimer? _memberFetchTimer;
   AdjustableRestartableTimer? _updateTimer;
@@ -372,7 +376,7 @@ class AttendanceTrackerBackend {
     int pullIntervalInactive = 10,
     int pushIntervalInactive = 4,
     int activeCooldownInterval = 10,
-        int configPullInterval = 360,
+    int configPullInterval = 360,
   }) async {
     _oauthCredentials = jsonDecode(oauthCredentialString);
     _sheetId = sheetId;
@@ -430,6 +434,11 @@ class AttendanceTrackerBackend {
 
       _sheetsClient = SheetsApi(_authClient!);
       _spreadsheet = await _sheetsClient?.spreadsheets.get(_sheetId!);
+      timingsTable = CheckoutConfigurationTable(
+        _sheetsClient!,
+        _spreadsheet!,
+        "LogoutTiming",
+      );
 
       final existingTitles =
           _spreadsheet?.sheets
@@ -498,7 +507,7 @@ class AttendanceTrackerBackend {
   }
 
   Future<void> _reloadConfig() async {
-
+    timingsTable?.load();
   }
 
   Future<void> _waitUntilQueuesEmpty({
@@ -751,7 +760,9 @@ class AttendanceTrackerBackend {
             values: [
               [
                 statusUpdates.last.toString().split('.').last.capitalize(),
-                userLocationUpdates[memberId] ?? "NULL",
+                userLocationUpdates[memberId]?.isEmpty ?? true
+                    ? "NULL"
+                    : userLocationUpdates[memberId] ?? "NULL",
               ],
             ],
           ),

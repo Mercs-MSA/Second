@@ -130,3 +130,37 @@ int? normalizeTagId(
     return null;
   }
 }
+
+DateTime parseTime(String input, {DateTime? date}) {
+  final baseDate = date ?? DateTime.now();
+
+  final value = input.trim().toUpperCase();
+
+  final timeRegex = RegExp(
+    r'^(\d{1,2}):(\d{2})(?::(\d{2}))?\s*(AM|PM)?$',
+  );
+
+  final match = timeRegex.firstMatch(value);
+  if (match == null) {
+    throw FormatException('Invalid time format: $input');
+  }
+
+  int hour = int.parse(match.group(1)!);
+  final int minute = int.parse(match.group(2)!);
+  final int second = int.parse(match.group(3) ?? '0');
+  final String? period = match.group(4);
+
+  if (period != null) {
+    if (hour == 12) hour = 0;
+    if (period == 'PM') hour += 12;
+  }
+
+  return DateTime(
+    baseDate.year,
+    baseDate.month,
+    baseDate.day,
+    hour,
+    minute,
+    second,
+  );
+}
