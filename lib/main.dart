@@ -227,42 +227,7 @@ class _HomePageState extends State<HomePage>
 
     // backend
     _backend = AttendanceTrackerBackend(widget.logger);
-    _backend.initialize(
-      widget.settingsManager.getValue<String>('google.sheet_id') ?? '',
-      widget.settingsManager.getValue<String>('google.oauth_credentials') ??
-          '{}',
-      pullIntervalActive:
-          widget.settingsManager.getValue<int>('backend.interval.activePull') ??
-          widget.settingsManager.getDefault<int>(
-            'backend.interval.activePull',
-          )!,
-      pushIntervalActive:
-          widget.settingsManager.getValue<int>('backend.interval.activePush') ??
-          widget.settingsManager.getDefault<int>(
-            'backend.interval.activePush',
-          )!,
-      pullIntervalInactive:
-          widget.settingsManager.getValue<int>(
-            'backend.interval.inactivePull',
-          ) ??
-          widget.settingsManager.getDefault<int>(
-            'backend.interval.inactivePull',
-          )!,
-      pushIntervalInactive:
-          widget.settingsManager.getValue<int>(
-            'backend.interval.inactivePush',
-          ) ??
-          widget.settingsManager.getDefault<int>(
-            'backend.interval.inactivePush',
-          )!,
-      activeCooldownInterval:
-          widget.settingsManager.getValue<int>(
-            'backend.interval.activeCooldown',
-          ) ??
-          widget.settingsManager.getDefault<int>(
-            'backend.interval.activeCooldown',
-          )!,
-    );
+    _backendStartup();
 
     // search filter
     filteredMembers = ValueNotifier(
@@ -391,6 +356,48 @@ class _HomePageState extends State<HomePage>
         });
       }
     }
+  }
+
+  void _backendStartup() {
+    _backend.initialize(
+      widget.settingsManager.getValue<String>('google.sheet_id') ?? '',
+      widget.settingsManager.getValue<String>('google.oauth_credentials') ??
+          '{}',
+      pullIntervalActive:
+      widget.settingsManager.getValue<int>('backend.interval.activePull') ??
+          widget.settingsManager.getDefault<int>(
+            'backend.interval.activePull',
+          )!,
+      pushIntervalActive:
+      widget.settingsManager.getValue<int>('backend.interval.activePush') ??
+          widget.settingsManager.getDefault<int>(
+            'backend.interval.activePush',
+          )!,
+      pullIntervalInactive:
+      widget.settingsManager.getValue<int>(
+        'backend.interval.inactivePull',
+      ) ??
+          widget.settingsManager.getDefault<int>(
+            'backend.interval.inactivePull',
+          )!,
+      pushIntervalInactive:
+      widget.settingsManager.getValue<int>(
+        'backend.interval.inactivePush',
+      ) ??
+          widget.settingsManager.getDefault<int>(
+            'backend.interval.inactivePush',
+          )!,
+      activeCooldownInterval:
+      widget.settingsManager.getValue<int>(
+        'backend.interval.activeCooldown',
+      ) ??
+          widget.settingsManager.getDefault<int>(
+            'backend.interval.activeCooldown',
+          )!,
+      configPullInterval: widget.settingsManager.getValue<int>(
+        'backend.interval.configsReload',
+      ) ?? widget.settingsManager.getDefault<int>('backend.interval.configsReload')!,
+    );
   }
 
   Future<void> _rfidHidEventListener(RfidEvent event) async {
@@ -674,51 +681,7 @@ class _HomePageState extends State<HomePage>
                               });
 
                               // backend
-                              _backend.initialize(
-                                widget.settingsManager.getValue<String>(
-                                      'google.sheet_id',
-                                    ) ??
-                                    '',
-                                widget.settingsManager.getValue<String>(
-                                      'google.oauth_credentials',
-                                    ) ??
-                                    '{}',
-                                pullIntervalActive:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.activePull',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.activePull',
-                                    )!,
-                                pushIntervalActive:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.activePush',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.activePush',
-                                    )!,
-                                pullIntervalInactive:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.inactivePull',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.inactivePull',
-                                    )!,
-                                pushIntervalInactive:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.inactivePush',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.inactivePush',
-                                    )!,
-                                activeCooldownInterval:
-                                    widget.settingsManager.getValue<int>(
-                                      'backend.interval.activeCooldown',
-                                    ) ??
-                                    widget.settingsManager.getDefault<int>(
-                                      'backend.interval.activeCooldown',
-                                    )!,
-                              );
+                              _backendStartup();
                             });
                           },
                         ),
@@ -890,51 +853,7 @@ class _HomePageState extends State<HomePage>
                         });
 
                         // backend
-                        _backend.initialize(
-                          widget.settingsManager.getValue<String>(
-                                'google.sheet_id',
-                              ) ??
-                              '',
-                          widget.settingsManager.getValue<String>(
-                                'google.oauth_credentials',
-                              ) ??
-                              '{}',
-                          pullIntervalActive:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.activePull',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.activePull',
-                              )!,
-                          pushIntervalActive:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.activePush',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.activePush',
-                              )!,
-                          pullIntervalInactive:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.inactivePull',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.inactivePull',
-                              )!,
-                          pushIntervalInactive:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.inactivePush',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.inactivePush',
-                              )!,
-                          activeCooldownInterval:
-                              widget.settingsManager.getValue<int>(
-                                'backend.interval.activeCooldown',
-                              ) ??
-                              widget.settingsManager.getDefault<int>(
-                                'backend.interval.activeCooldown',
-                              )!,
-                        );
+                        _backendStartup();
                       });
                     },
                   ),

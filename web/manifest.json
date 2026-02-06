@@ -1,6 +1,6 @@
 {
-    "name": "attendance_tracker",
-    "short_name": "attendance_tracker",
+    "name": "second",
+    "short_name": "second",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

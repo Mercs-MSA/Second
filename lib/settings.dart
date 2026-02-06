@@ -82,6 +82,7 @@ class SettingsManager {
       'backend.interval.inactivePull': 90,
       'backend.interval.inactivePush': 60,
       'backend.interval.activeCooldown': 60,
+      'backend.interval.configsReload': 360,
     };
 
     _developerOptions = {
@@ -93,6 +94,7 @@ class SettingsManager {
       'backend.interval.inactivePull': int,
       'backend.interval.inactivePush': int,
       'backend.interval.activeCooldown': int,
+      'backend.interval.configsReload': int,
     };
   }
 

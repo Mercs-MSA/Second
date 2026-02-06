@@ -318,10 +318,12 @@ class AttendanceTrackerBackend {
   // tasks
   AdjustableRestartableTimer? _memberFetchTimer;
   AdjustableRestartableTimer? _updateTimer;
+  AdjustableRestartableTimer? _configReloadTimer;
   RestartableTimer? _googleAttemptBringupTimer;
 
   Duration? pushDuration;
   Duration? pullDuration;
+  Duration? configReloadDuration;
 
   Duration? pushDurationActive;
   Duration? pullDurationActive;
@@ -370,6 +372,7 @@ class AttendanceTrackerBackend {
     int pullIntervalInactive = 10,
     int pushIntervalInactive = 4,
     int activeCooldownInterval = 10,
+        int configPullInterval = 360,
   }) async {
     _oauthCredentials = jsonDecode(oauthCredentialString);
     _sheetId = sheetId;
@@ -402,6 +405,7 @@ class AttendanceTrackerBackend {
     pushDurationActive = Duration(seconds: pushIntervalActive);
     pullDurationInactive = Duration(seconds: pullIntervalInactive);
     pushDurationInactive = Duration(seconds: pushIntervalInactive);
+    configReloadDuration = Duration(seconds: configPullInterval);
 
     activeCooldownTimer = RestartableTimer(activeCooldownDuration!, () {
       pullDuration = pullDurationInactive;
@@ -481,6 +485,20 @@ class AttendanceTrackerBackend {
       _updateTimer?.restartWith(pushDuration!);
     });
     _updateMembers(); // no await = schedule for background
+
+    if (_configReloadTimer != null) {
+      _configReloadTimer!.cancel();
+    }
+    _configReloadTimer = AdjustableRestartableTimer(() async {
+      logger.t("Reloading config...");
+      _reloadConfig();
+      _configReloadTimer?.restartWith(configReloadDuration!);
+    });
+    _configReloadTimer?.start(configReloadDuration!);
+  }
+
+  Future<void> _reloadConfig() async {
+
   }
 
   Future<void> _waitUntilQueuesEmpty({
