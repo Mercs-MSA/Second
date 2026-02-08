@@ -375,7 +375,7 @@ class AttendanceTrackerBackend {
     });
   }
 
-  void initialize(
+  Future<void> initialize(
     String sheetId,
     String oauthCredentialString, {
     int pullIntervalActive = 5,

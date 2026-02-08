@@ -12,6 +12,7 @@ import 'package:intl/intl.dart' as intl;
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:second/config_table.dart';
 import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -19,7 +20,6 @@ import 'package:async/async.dart';
 import 'package:second/backend.dart';
 import 'package:second/keyboard.dart';
 import 'package:second/log_inst.dart';
-import 'package:second/log_printer.dart';
 import 'package:second/log_view.dart';
 import 'package:second/rfid_event.dart';
 import 'package:second/settings.dart';
@@ -30,6 +30,8 @@ import 'package:second/user_flow.dart';
 import 'package:second/util.dart';
 import 'package:second/widgets.dart';
 import 'package:second/optimization.dart';
+
+import 'log_printer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -232,6 +234,7 @@ class _HomePageState extends State<HomePage>
 
   // backend
   late AttendanceTrackerBackend _backend;
+  late CheckoutScheduler _checkoutScheduler;
 
   // name search
   String _searchQuery = '';
@@ -262,6 +265,21 @@ class _HomePageState extends State<HomePage>
     // backend
     _backend = AttendanceTrackerBackend(widget.logger);
     _backendStartup();
+
+    _backend.timingsTable?.load();
+    _checkoutScheduler = CheckoutScheduler(
+      configs: _backend.timingsTable?.entries.value ?? [],
+      onTrigger: (CheckoutConfigEntry entry, DateTime appliedTime) async {
+        await _backend.instantMemberUpdate();
+        for (final member in _backend.attendance.value) {
+          if (member.status == AttendanceStatus.present) {
+            _backend.clockOut(member.id);
+            print("here");
+          }
+        }
+      },
+    );
+    _checkoutScheduler.start();
 
     // search filter
     filteredMembers = ValueNotifier(
@@ -392,8 +410,8 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  void _backendStartup() {
-    _backend.initialize(
+  void _backendStartup() async {
+    await _backend.initialize(
       widget.settingsManager.getValue<String>('google.sheet_id') ?? '',
       widget.settingsManager.getValue<String>('google.oauth_credentials') ??
           '{}',
@@ -436,6 +454,11 @@ class _HomePageState extends State<HomePage>
             'backend.interval.configsReload',
           )!,
     );
+
+    _backend.timingsTable?.load();
+    _backend.timingsTable?.entries.addListener(() {
+      _checkoutScheduler.configs = _backend.timingsTable?.entries.value ?? [];
+    });
   }
 
   Future<void> _rfidHidEventListener(RfidEvent event) async {

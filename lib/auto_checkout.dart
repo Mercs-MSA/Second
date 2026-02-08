@@ -26,7 +26,7 @@ class _AutoClockOutSettingsState extends State<AutoClockOutSettings> {
   @override
   void initState() {
     super.initState();
-    final entries = widget.backend.timingsTable?.entries ?? [];
+    final entries = widget.backend.timingsTable?.entries.value ?? [];
     const days = [
       'Sunday',
       'Monday',
