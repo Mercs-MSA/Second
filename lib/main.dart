@@ -12,6 +12,7 @@ import 'package:intl/intl.dart' as intl;
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:transparent_image/transparent_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:async/async.dart';
@@ -1032,36 +1033,60 @@ class _HomePageState extends State<HomePage>
                                                     Alignment.bottomRight,
                                                 children: [
                                                   CircleAvatar(
-                                                    child: Builder(
-                                                      builder: (context) {
-                                                        List<String> nameParts =
-                                                            member.name.split(
-                                                              ' ',
-                                                            );
-                                                        nameParts.removeWhere(
-                                                          (val) => val.isEmpty,
-                                                        );
-                                                        return Text(
-                                                          nameParts
-                                                              .map(
-                                                                (part) =>
-                                                                    part[0],
-                                                              )
-                                                              .take(2)
-                                                              .join(),
-                                                        );
-                                                      },
-                                                    ),
+                                                    child: member.pfpUrl != null
+                                                        ? ClipOval(
+                                                            child: FadeInImage.memoryNetwork(
+                                                              placeholder:
+                                                                  kTransparentImage,
+                                                              image: member
+                                                                  .pfpUrl!,
+                                                            ),
+                                                          )
+                                                        : Builder(
+                                                            builder: (context) {
+                                                              List<String>
+                                                              nameParts = member
+                                                                  .name
+                                                                  .split(' ');
+                                                              nameParts
+                                                                  .removeWhere(
+                                                                    (val) => val
+                                                                        .isEmpty,
+                                                                  );
+                                                              return Text(
+                                                                nameParts
+                                                                    .map(
+                                                                      (part) =>
+                                                                          part[0],
+                                                                    )
+                                                                    .take(2)
+                                                                    .join(),
+                                                              );
+                                                            },
+                                                          ),
                                                   ),
-                                                  Icon(
-                                                    Icons.circle,
-                                                    color:
-                                                        member.status ==
-                                                            AttendanceStatus
-                                                                .present
-                                                        ? Colors.green
-                                                        : Colors.red,
-                                                    size: 12,
+                                                  Stack(
+                                                    alignment: AlignmentGeometry
+                                                        .center,
+                                                    children: [
+                                                      Icon(
+                                                        Icons.circle,
+                                                        color: Theme.of(context)
+                                                            .colorScheme
+                                                            .surfaceContainer,
+                                                        size: 16,
+                                                      ),
+                                                      Icon(
+                                                        Icons.circle,
+                                                        color:
+                                                            member.status ==
+                                                                AttendanceStatus
+                                                                    .present
+                                                            ? Colors.green
+                                                            : Colors.red,
+                                                        size: 12,
+                                                      ),
+                                                    ],
                                                   ),
                                                 ],
                                               ),

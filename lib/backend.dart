@@ -110,6 +110,7 @@ class Member {
   final String? location;
   final String? passwordHash;
   final MemberPrivilege privilege;
+  final String? pfpUrl;
   Member(
     this.id,
     this.name,
@@ -117,6 +118,7 @@ class Member {
     this.location,
     this.passwordHash,
     this.privilege = MemberPrivilege.student,
+    this.pfpUrl = null,
   });
 
   @override
@@ -132,6 +134,7 @@ class Member {
       'location': location,
       'privilege': privilege.name,
       'passwordHash': passwordHash,
+      'pfp': pfpUrl,
     };
   }
 
@@ -153,6 +156,7 @@ class Member {
       location: data['location'] as String?,
       passwordHash: data['passwordHash'] as String?,
       privilege: privilegeFromName(data['privilege'] as String),
+      pfpUrl: data["pfpUrl"] as String?,
     );
   }
 }
@@ -304,7 +308,7 @@ class AdjustableRestartableTimer {
 class AttendanceTrackerBackend {
   static const memberSheetName = "Members";
   static const logSheetName = "Log";
-  static const memberSheetContentsRange = "$memberSheetName!A3:F";
+  static const memberSheetContentsRange = "$memberSheetName!A3:G";
   static const memberSheetIdsRange = "$memberSheetName!A3:A";
   static const logSheetContentsRange = "$logSheetName!A3:";
   static const logSheetHeaderRange = "$logSheetName!A2:2";
@@ -600,6 +604,7 @@ class AttendanceTrackerBackend {
     try {
       membersTableResponse = await _sheetsClient?.spreadsheets.values.get(
         _sheetId ?? "",
+        valueRenderOption: 'FORMULA', // for representation if =IMAGE() in pfp
         AttendanceTrackerBackend.memberSheetContentsRange,
       );
     } on SocketException catch (e) {
@@ -624,10 +629,12 @@ class AttendanceTrackerBackend {
     List<Member> newMembers = [];
     for (List<dynamic> googleMember in membersTableResponse.values!) {
       // ID, Name, Privilege, Status, Location
-      if (googleMember.length != 5 && googleMember.length != 6) {
+      if (googleMember.length != 5 &&
+          googleMember.length != 6 &&
+          googleMember.length != 7) {
         // password fields may or may not be present
         logger.w(
-          "Malformed user detected, skipping user addition, expected 5 or 6 fields, got ${googleMember.length}",
+          "Malformed user detected, skipping user addition, expected 5, 6, or 7 fields, got ${googleMember.length}",
         );
         continue;
       }
@@ -642,9 +649,14 @@ class AttendanceTrackerBackend {
         );
         continue;
       }
+      var parsedPfp = googleMember.elementAtOrNull(6) as String?;
+      if (parsedPfp?.startsWith("=IMAGE(\"") ?? false) {
+        parsedPfp = parsedPfp?.replaceFirst("=IMAGE(\"", "");
+        parsedPfp = parsedPfp?.substring(0, parsedPfp.length - 2);
+      }
       newMembers.add(
         Member(
-          int.tryParse(googleMember[0] as String) ?? -1,
+          int.tryParse(googleMember[0].toString()) ?? -1,
           googleMember[1] as String,
           AttendanceStatus.values.byName(
             (googleMember[3] as String).toLowerCase(),
@@ -652,6 +664,7 @@ class AttendanceTrackerBackend {
           location: googleMember[4] as String,
           passwordHash: googleMember.elementAtOrNull(5) as String?,
           privilege: Member.privilegeFromName(googleMember[2] as String),
+          pfpUrl: parsedPfp,
         ),
       );
     }
@@ -1178,6 +1191,7 @@ class AttendanceTrackerBackend {
         location: null,
         privilege: attendance.value[memberIndex].privilege,
         passwordHash: attendance.value[memberIndex].passwordHash,
+        pfpUrl: attendance.value[memberIndex].pfpUrl,
       );
       attendance.value = [
         ...attendance.value,
@@ -1214,6 +1228,7 @@ class AttendanceTrackerBackend {
         location: location,
         privilege: attendance.value[memberIndex].privilege,
         passwordHash: attendance.value[memberIndex].passwordHash,
+        pfpUrl: attendance.value[memberIndex].pfpUrl,
       );
       attendance.value = [
         ...attendance.value,

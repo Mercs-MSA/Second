@@ -4,6 +4,7 @@ import 'package:second/settings.dart';
 import 'package:second/settings_page.dart';
 import 'package:second/util.dart';
 import 'package:flutter/material.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 class UserFlow extends StatefulWidget {
   final Member user;
@@ -309,16 +310,37 @@ class _UserFlowState extends State<UserFlow> {
                             Spacer(),
                             CircleAvatar(
                               radius: 128,
-                              child: Text(
-                                initialsFromName(widget.user.name),
-                                style: TextStyle(
-                                  fontSize: 84,
-                                  fontWeight: FontWeight.bold,
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurface,
-                                ),
-                              ),
+                              child: widget.user.pfpUrl != null
+                                  ? ClipOval(
+                                      child: FadeInImage.memoryNetwork(
+                                        placeholder: kTransparentImage,
+                                        image: widget.user.pfpUrl!,
+                                      ),
+                                    )
+                                  : Builder(
+                                      builder: (context) {
+                                        List<String> nameParts = widget
+                                            .user
+                                            .name
+                                            .split(' ');
+                                        nameParts.removeWhere(
+                                          (val) => val.isEmpty,
+                                        );
+                                        return Text(
+                                          nameParts
+                                              .map((part) => part[0])
+                                              .take(2)
+                                              .join(),
+                                          style: TextStyle(
+                                            fontSize: 84,
+                                            fontWeight: FontWeight.bold,
+                                            color: Theme.of(
+                                              context,
+                                            ).colorScheme.onSurface,
+                                          ),
+                                        );
+                                      },
+                                    ),
                             ),
                             Spacer(),
                             if (widget.user.status == AttendanceStatus.present)
