@@ -118,7 +118,7 @@ class Member {
     this.location,
     this.passwordHash,
     this.privilege = MemberPrivilege.student,
-    this.pfpUrl = null,
+    this.pfpUrl,
   });
 
   @override
@@ -735,6 +735,27 @@ class AttendanceTrackerBackend {
         passwordHashUpdates[event.memberId] = event.newHash;
         continue;
       }
+
+      if (event is ClockOutEvent) {
+        _logQueue.add(
+          MemberLogEntry(
+            event.memberId,
+            MemberLoggerAction.checkOut,
+            event.time,
+            "NULL",
+          ),
+        );
+      } else if (event is ClockInEvent) {
+        _logQueue.add(
+          MemberLogEntry(
+            event.memberId,
+            MemberLoggerAction.checkIn,
+            event.time,
+            event.location,
+          ),
+        );
+      }
+
       userStatusUpdates.update(
         event.memberId,
         (list) => list
@@ -783,28 +804,6 @@ class AttendanceTrackerBackend {
             ],
           ),
         );
-
-        for (final statusUpdate in statusUpdates) {
-          if (statusUpdate == AttendanceStatus.out) {
-            _logQueue.add(
-              MemberLogEntry(
-                memberId,
-                MemberLoggerAction.checkOut,
-                DateTime.now(),
-                "NULL",
-              ),
-            );
-          } else if (statusUpdate == AttendanceStatus.present) {
-            _logQueue.add(
-              MemberLogEntry(
-                memberId,
-                MemberLoggerAction.checkIn,
-                DateTime.now(),
-                userLocationUpdates[memberId] ?? "NULL",
-              ),
-            );
-          }
-        }
       }
 
       // Add password hash updates
@@ -1165,12 +1164,14 @@ class AttendanceTrackerBackend {
     return attendance.value.any((member) => member.id == id);
   }
 
-  void clockOut(int memberId) {
+  void clockOut(int memberId, {DateTime? time}) {
+    time ??= DateTime.now();
+
     if (!attendance.value.any((member) => member.id == memberId)) {
       throw Exception('Member with ID $memberId not found');
     }
 
-    final event = ClockOutEvent(memberId, DateTime.now());
+    final event = ClockOutEvent(memberId, time);
     _clockOutQueue.add(event);
     // if (_clockInQueue
     //     .map((e) => e is ClockInEvent ? e.memberId : null)

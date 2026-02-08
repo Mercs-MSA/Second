@@ -2,7 +2,6 @@ import 'package:second/backend.dart';
 import 'package:second/passwords.dart';
 import 'package:second/settings.dart';
 import 'package:second/settings_page.dart';
-import 'package:second/util.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
 
@@ -403,8 +402,18 @@ class _UserFlowState extends State<UserFlow> {
                                             Navigator.of(context).pop();
                                           }
                                         : null,
+                                    style: ButtonStyle(
+                                      shape: WidgetStatePropertyAll(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadiusGeometry.all(
+                                                Radius.circular(16.0),
+                                              ),
+                                        ),
+                                      ),
+                                    ),
                                     child: Padding(
-                                      padding: const EdgeInsets.all(18.0),
+                                      padding: const EdgeInsets.all(24.0),
                                       child: Text(
                                         "Clock In",
                                         style: TextStyle(
@@ -431,12 +440,22 @@ class _UserFlowState extends State<UserFlow> {
                                           }
                                         : null,
                                     child: Padding(
-                                      padding: const EdgeInsets.all(18.0),
+                                      padding: const EdgeInsets.all(24.0),
                                       child: Text(
                                         "Clock Out",
                                         style: TextStyle(
                                           fontSize: 24,
                                           fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    style: ButtonStyle(
+                                      shape: WidgetStatePropertyAll(
+                                        RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadiusGeometry.all(
+                                                Radius.circular(16.0),
+                                              ),
                                         ),
                                       ),
                                     ),

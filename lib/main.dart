@@ -86,6 +86,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
+    super.initState();
     greenCenterConfetti = ConfettiController();
   }
 
@@ -270,11 +271,11 @@ class _HomePageState extends State<HomePage>
     _checkoutScheduler = CheckoutScheduler(
       configs: _backend.timingsTable?.entries.value ?? [],
       onTrigger: (CheckoutConfigEntry entry, DateTime appliedTime) async {
+        widget.logger.t("Running Auto-Checkout");
         await _backend.instantMemberUpdate();
         for (final member in _backend.attendance.value) {
           if (member.status == AttendanceStatus.present) {
-            _backend.clockOut(member.id);
-            print("here");
+            _backend.clockOut(member.id, time: appliedTime);
           }
         }
       },

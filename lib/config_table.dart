@@ -2,9 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
-import 'package:googleapis/binaryauthorization/v1.dart';
 import 'package:googleapis/sheets/v4.dart';
-import 'package:http/http.dart';
 import 'package:second/settings.dart';
 import 'package:second/util.dart';
 
