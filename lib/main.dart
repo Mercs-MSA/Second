@@ -3,11 +3,12 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:confetti/confetti.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as intl;
 import 'package:logger/logger.dart';
 import 'package:lottie/lottie.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -74,93 +75,118 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late ConfettiController greenCenterConfetti;
+
+  @override
+  void initState() {
+    greenCenterConfetti = ConfettiController();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: widget.themeController.lowResouceMode,
-      builder: (context, value, child) {
-        return ValueListenableBuilder(
-          valueListenable: widget.themeController.themeMode,
+    return Stack(
+      alignment: AlignmentDirectional.center,
+      textDirection: TextDirection.ltr,
+      children: [
+        ValueListenableBuilder(
+          valueListenable: widget.themeController.lowResouceMode,
           builder: (context, value, child) {
             return ValueListenableBuilder(
-              valueListenable: widget.themeController.accentColor,
+              valueListenable: widget.themeController.themeMode,
               builder: (context, value, child) {
-                final adjustedColor = HSVColor.fromColor(
-                  value,
-                ).withSaturation(0.52).toColor();
+                return ValueListenableBuilder(
+                  valueListenable: widget.themeController.accentColor,
+                  builder: (context, value, child) {
+                    final adjustedColor = HSVColor.fromColor(
+                      value,
+                    ).withSaturation(0.52).toColor();
 
-                final darkColorScheme = ColorScheme.fromSeed(
-                  seedColor: adjustedColor,
-                  brightness: Brightness.dark,
-                  primary: adjustedColor,
-                );
+                    final darkColorScheme = ColorScheme.fromSeed(
+                      seedColor: adjustedColor,
+                      brightness: Brightness.dark,
+                      primary: adjustedColor,
+                    );
 
-                final lightColorScheme = ColorScheme.fromSeed(
-                  seedColor: adjustedColor,
-                  brightness: Brightness.light,
-                  primary: adjustedColor,
-                );
+                    final lightColorScheme = ColorScheme.fromSeed(
+                      seedColor: adjustedColor,
+                      brightness: Brightness.light,
+                      primary: adjustedColor,
+                    );
 
-                final darkTheme = ThemeData(
-                  colorScheme: darkColorScheme,
-                  useMaterial3: true,
-                  scaffoldBackgroundColor: darkColorScheme.surface,
-                  appBarTheme: AppBarTheme(
-                    backgroundColor: darkColorScheme.primary,
-                    foregroundColor: darkColorScheme.onPrimary,
-                  ),
-                  pageTransitionsTheme:
-                      widget.themeController.lowResouceMode.value
-                      ? PageTransitionsTheme(
-                          builders: {
-                            for (final platform in TargetPlatform.values)
-                              platform: const NoTransitionsBuilder(),
-                          },
-                        )
-                      : null,
-                  splashFactory: widget.themeController.lowResouceMode.value
-                      ? NoSplash.splashFactory
-                      : null,
-                );
+                    final darkTheme = ThemeData(
+                      colorScheme: darkColorScheme,
+                      useMaterial3: true,
+                      scaffoldBackgroundColor: darkColorScheme.surface,
+                      appBarTheme: AppBarTheme(
+                        backgroundColor: darkColorScheme.primary,
+                        foregroundColor: darkColorScheme.onPrimary,
+                      ),
+                      pageTransitionsTheme:
+                          widget.themeController.lowResouceMode.value
+                          ? PageTransitionsTheme(
+                              builders: {
+                                for (final platform in TargetPlatform.values)
+                                  platform: const NoTransitionsBuilder(),
+                              },
+                            )
+                          : null,
+                      splashFactory: widget.themeController.lowResouceMode.value
+                          ? NoSplash.splashFactory
+                          : null,
+                    );
 
-                final lightTheme = ThemeData(
-                  colorScheme: lightColorScheme,
-                  useMaterial3: true,
-                  scaffoldBackgroundColor: lightColorScheme.surface,
-                  appBarTheme: AppBarTheme(
-                    backgroundColor: lightColorScheme.primary,
-                    foregroundColor: lightColorScheme.onPrimary,
-                  ),
-                  pageTransitionsTheme:
-                      widget.themeController.lowResouceMode.value
-                      ? PageTransitionsTheme(
-                          builders: {
-                            for (final platform in TargetPlatform.values)
-                              platform: const NoTransitionsBuilder(),
-                          },
-                        )
-                      : null,
-                  splashFactory: widget.themeController.lowResouceMode.value
-                      ? NoSplash.splashFactory
-                      : null,
-                );
+                    final lightTheme = ThemeData(
+                      colorScheme: lightColorScheme,
+                      useMaterial3: true,
+                      scaffoldBackgroundColor: lightColorScheme.surface,
+                      appBarTheme: AppBarTheme(
+                        backgroundColor: lightColorScheme.primary,
+                        foregroundColor: lightColorScheme.onPrimary,
+                      ),
+                      pageTransitionsTheme:
+                          widget.themeController.lowResouceMode.value
+                          ? PageTransitionsTheme(
+                              builders: {
+                                for (final platform in TargetPlatform.values)
+                                  platform: const NoTransitionsBuilder(),
+                              },
+                            )
+                          : null,
+                      splashFactory: widget.themeController.lowResouceMode.value
+                          ? NoSplash.splashFactory
+                          : null,
+                    );
 
-                return MaterialApp(
-                  title: 'Second',
-                  themeMode: widget.themeController.themeMode.value,
-                  darkTheme: darkTheme,
-                  theme: lightTheme,
-                  home: HomePage(
-                    widget.themeController,
-                    widget.settingsManager,
-                    widget.logger,
-                  ),
+                    return MaterialApp(
+                      title: 'Second',
+                      themeMode: widget.themeController.themeMode.value,
+                      darkTheme: darkTheme,
+                      theme: lightTheme,
+                      home: HomePage(
+                        widget.themeController,
+                        widget.settingsManager,
+                        widget.logger,
+                        greenCenterConfetti,
+                      ),
+                    );
+                  },
                 );
               },
             );
           },
-        );
-      },
+        ),
+        ConfettiWidget(
+          confettiController: greenCenterConfetti,
+          gravity: 0.0,
+          blastDirection: 0,
+          minBlastForce: 40.0,
+          maxBlastForce: 60.0,
+          blastDirectionality: BlastDirectionality.explosive,
+          particleDrag: 0.03,
+          numberOfParticles: 8,
+          colors: [Colors.green[300]!, Colors.green[500]!, Colors.green[600]!],
+        ),
+      ],
     );
   }
 }
@@ -169,13 +195,16 @@ class HomePage extends StatefulWidget {
   const HomePage(
     this.themeController,
     this.settingsManager,
-    this.logger, {
+    this.logger,
+    this.greenCenterConfetti, {
     super.key,
   });
 
   final ThemeController themeController;
   final SettingsManager settingsManager;
   final Logger logger;
+
+  final ConfettiController greenCenterConfetti;
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -488,6 +517,9 @@ class _HomePageState extends State<HomePage>
   }
 
   void _displaySuccessPopup() async {
+    if (!widget.themeController.lowResouceMode.value) {
+      widget.greenCenterConfetti.play();
+    }
     showDialog(
       barrierColor: Colors.green.withAlpha(40),
       barrierDismissible: true,
@@ -495,6 +527,7 @@ class _HomePageState extends State<HomePage>
       builder: (context) {
         Timer(Duration(seconds: 1), () {
           Navigator.of(context).maybePop();
+          widget.greenCenterConfetti.stop(clearAllParticles: true);
         });
         return AlertDialog(
           content: Column(
@@ -628,10 +661,10 @@ class _HomePageState extends State<HomePage>
                       child: ValueListenableBuilder(
                         valueListenable: _now,
                         builder: (context, value, child) {
-                          final timeString = DateFormat(
+                          final timeString = intl.DateFormat(
                             'hh:mm:ss a',
                           ).format(_now.value);
-                          final dateString = DateFormat(
+                          final dateString = intl.DateFormat(
                             'MMMM d, yyyy',
                           ).format(_now.value);
                           return Column(
@@ -770,10 +803,10 @@ class _HomePageState extends State<HomePage>
                 child: ValueListenableBuilder(
                   valueListenable: _now,
                   builder: (context, value, child) {
-                    final timeString = DateFormat(
+                    final timeString = intl.DateFormat(
                       'hh:mm:ss a',
                     ).format(_now.value);
-                    final dateString = DateFormat(
+                    final dateString = intl.DateFormat(
                       'MMMM d, yyyy',
                     ).format(_now.value);
                     return Column(

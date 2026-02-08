@@ -174,10 +174,13 @@ class MemberLogEntry extends SerializableItem {
     final memberId = data['memberId'] is int
         ? data['memberId'] as int
         : int.tryParse(data['memberId'].toString()) ?? -1;
+    if (data["time"].runtimeType == String) {
+      data["time"] = DateTime.parse(data["time"]).millisecondsSinceEpoch;
+    }
     return MemberLogEntry(
       memberId,
       MemberLoggerAction.values.byName(data['action'] as String),
-      DateTime.parse(data['time'] as String),
+      DateTime.fromMillisecondsSinceEpoch(data["time"]),
       data['location'] as String,
     );
   }
@@ -187,7 +190,7 @@ class MemberLogEntry extends SerializableItem {
     return {
       'memberId': memberId,
       'action': action.name,
-      'time': "=EPOCHTODATE(${time.toUtc().millisecondsSinceEpoch}, 2)",
+      'time': time.toUtc().millisecondsSinceEpoch,
       'location': location,
     };
   }
@@ -199,13 +202,16 @@ class TimeClockEvent extends SerializableItem {
   TimeClockEvent(this.memberId, this.time);
 
   static TimeClockEvent fromMap(Map<String, dynamic> data) {
+    if (data["time"].runtimeType == String) {
+      data["time"] = DateTime.parse(data["time"]).millisecondsSinceEpoch;
+    }
     // prefer more specific subclasses if fields are present
     if (data.containsKey('newHash')) {
       return PasswordResetEvent(
         data['memberId'] is int
             ? data['memberId'] as int
             : int.parse(data['memberId'].toString()),
-        DateTime.parse(data['time'] as String),
+        DateTime.fromMillisecondsSinceEpoch(data["time"]),
         data['newHash'] as String,
       );
     }
@@ -214,7 +220,7 @@ class TimeClockEvent extends SerializableItem {
         data['memberId'] is int
             ? data['memberId'] as int
             : int.parse(data['memberId'].toString()),
-        DateTime.parse(data['time'] as String),
+        DateTime.fromMillisecondsSinceEpoch(data["time"]),
         data['location'] as String,
       );
     }
@@ -222,16 +228,13 @@ class TimeClockEvent extends SerializableItem {
       data['memberId'] is int
           ? data['memberId'] as int
           : int.parse(data['memberId'].toString()),
-      DateTime.parse(data['time'] as String),
+      DateTime.fromMillisecondsSinceEpoch(data["time"]),
     );
   }
 
   @override
   Map<String, dynamic> serialize() {
-    return {
-      'memberId': memberId,
-      'time': "=EPOCHTODATE(${time.toUtc().millisecondsSinceEpoch}, 2)",
-    };
+    return {'memberId': memberId, 'time': time.toUtc().millisecondsSinceEpoch};
   }
 }
 
