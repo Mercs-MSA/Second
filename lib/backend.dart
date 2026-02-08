@@ -308,6 +308,7 @@ class AdjustableRestartableTimer {
 class AttendanceTrackerBackend {
   static const memberSheetName = "Members";
   static const logSheetName = "Log";
+  static const configSheetName = "LogoutTiming";
   static const memberSheetContentsRange = "$memberSheetName!A3:G";
   static const memberSheetIdsRange = "$memberSheetName!A3:A";
   static const logSheetContentsRange = "$logSheetName!A3:";
@@ -444,7 +445,7 @@ class AttendanceTrackerBackend {
       timingsTable = CheckoutConfigurationTable(
         _sheetsClient!,
         _spreadsheet!,
-        "LogoutTiming",
+        AttendanceTrackerBackend.configSheetName,
       );
 
       final existingTitles =
@@ -468,6 +469,14 @@ class AttendanceTrackerBackend {
             addSheet: AddSheetRequest(
               properties: SheetProperties(
                 title: AttendanceTrackerBackend.logSheetName,
+              ),
+            ),
+          ),
+        if (!existingTitles.contains(AttendanceTrackerBackend.configSheetName))
+          Request(
+            addSheet: AddSheetRequest(
+              properties: SheetProperties(
+                title: AttendanceTrackerBackend.configSheetName,
               ),
             ),
           ),
@@ -571,6 +580,14 @@ class AttendanceTrackerBackend {
             addSheet: AddSheetRequest(
               properties: SheetProperties(
                 title: AttendanceTrackerBackend.logSheetName,
+              ),
+            ),
+          ),
+        if (!existingTitles.contains(AttendanceTrackerBackend.configSheetName))
+          Request(
+            addSheet: AddSheetRequest(
+              properties: SheetProperties(
+                title: AttendanceTrackerBackend.configSheetName,
               ),
             ),
           ),

@@ -137,17 +137,53 @@ class CheckoutConfigurationTable {
   });
 
   Future<void> load() async {
-    var request = await api.spreadsheets.values.get(
-      spreadsheet.spreadsheetId ?? "",
-      "$sheetName!A2:${columnToReference(headerOrder.length)}",
-      majorDimension: "ROWS",
-    );
+    ValueRange request;
+    try {
+      request = await api.spreadsheets.values.get(
+        spreadsheet.spreadsheetId ?? "",
+        "$sheetName!A1:${columnToReference(headerOrder.length)}",
+        majorDimension: "ROWS",
+      );
+    } catch (e) {
+      // If we can't even get the sheet, it might be newly created and completely empty
+      await _initializeSheet();
+      entries.value = [];
+      return;
+    }
 
-    final values = request.values ?? const <List<Object?>>[];
+    final allValues = request.values ?? const <List<Object?>>[];
+
+    if (allValues.isEmpty) {
+      await _initializeSheet();
+      entries.value = [];
+      return;
+    }
+
+    // Check if the first row matches our header order
+    final firstRow = allValues[0]
+        .map((e) => e?.toString().toLowerCase() ?? "")
+        .toList();
+    bool headersMatch = true;
+    for (int i = 0; i < headerOrder.length; i++) {
+      if (i >= firstRow.length || firstRow[i] != headerOrder[i].toLowerCase()) {
+        headersMatch = false;
+        break;
+      }
+    }
+
+    if (!headersMatch) {
+      await _initializeSheet();
+      // Re-load if we just initialized it, although it should be empty now
+      entries.value = [];
+      return;
+    }
+
+    final values = allValues.skip(1); // Skip header row
 
     List<CheckoutConfigEntry> newEntries = [];
 
     for (final rawEntry in values) {
+      if (rawEntry.length < headerOrder.length) continue;
       newEntries.add(
         CheckoutConfigEntry(
           [
@@ -175,6 +211,28 @@ class CheckoutConfigurationTable {
     }
 
     entries.value = newEntries;
+  }
+
+  Future<void> _initializeSheet() async {
+    final now = DateTime.now();
+    final defaultEntries = List.generate(7, (i) {
+      return CheckoutConfigEntry(
+        i,
+        DateTime(now.year, now.month, now.day, 3, 0), // 3:00 AM
+        DateTime(now.year, now.month, now.day, 21, 0), // 9:00 PM
+        true,
+        true,
+      );
+    });
+
+    await api.spreadsheets.values.update(
+      ValueRange(values: [headerOrder], majorDimension: "ROWS"),
+      spreadsheet.spreadsheetId ?? "",
+      "$sheetName!A1:${columnToReference(headerOrder.length)}1",
+      valueInputOption: "USER_ENTERED",
+    );
+
+    await setEntries(defaultEntries);
   }
 
   Future<void> setEntries(List<CheckoutConfigEntry> newEntries) async {
