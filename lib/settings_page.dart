@@ -13,6 +13,7 @@ import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 
 import 'dev_opts_page.dart';
+import 'log_inst.dart';
 
 class PinKeypad extends StatelessWidget {
   final Function(String) onKeyPressed;
@@ -555,7 +556,7 @@ class _SettingsPageState extends State<SettingsPage> {
                       _settingsManager.setValue("app.theme.logo", base64Image);
                     });
                   } catch (e, st) {
-                    debugPrint("Failed to import image: $e\n$st");
+                    loggerInstance?.e("Failed to import image: $e\n$st");
                     if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Failed to import image')),
@@ -892,7 +893,7 @@ class _SettingsPageState extends State<SettingsPage> {
         const SnackBar(content: Text('Settings imported successfully')),
       );
     } catch (e, st) {
-      debugPrint('Settings import failed: $e\n$st');
+      loggerInstance?.e('Settings import failed: $e\n$st');
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Failed to import settings')),

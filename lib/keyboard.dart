@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:second/log_inst.dart';
 import 'package:xml/xml.dart';
 
 class KeyEvent {
@@ -585,7 +586,7 @@ class _VirtualKeyboardState extends State<VirtualKeyboard>
       _parsedLayoutsCache[path] = layoutData;
       return layoutData;
     } catch (e) {
-      debugPrint(
+      loggerInstance?.e(
         'Error parsing XML asset $path: $e',
       ); // Changed message for clarity
       return null;
@@ -653,7 +654,7 @@ class _VirtualKeyboardState extends State<VirtualKeyboard>
 
   void _switchToLayout(String targetLayoutLinkName) {
     if (!_layoutNameToIndex.containsKey(targetLayoutLinkName)) {
-      debugPrint(
+      loggerInstance?.e(
         'Attempted to switch to unknown layout: $targetLayoutLinkName',
       );
       return;
