@@ -37,6 +37,10 @@ void main() async {
   await settings.init();
 
   final controller = ThemeController();
+  controller.updateLowResourceMode(
+    settings.getValue<bool>("app.lowresources") ??
+        settings.getDefault<bool>("app.lowresources")!,
+  );
   controller.updateTheme(settings.getValue<String>('app.theme.mode') ?? "dark");
   controller.updateAccent(
     settings.getValue<String>('app.theme.accent') ?? "blue",
