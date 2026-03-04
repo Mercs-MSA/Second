@@ -1,4 +1,6 @@
+import 'package:markdown_widget/markdown_widget.dart';
 import 'package:second/backend.dart';
+import 'package:second/message_board_loader.dart';
 import 'package:second/passwords.dart';
 import 'package:second/settings.dart';
 import 'package:second/settings_page.dart';
@@ -29,20 +31,30 @@ class UserFlow extends StatefulWidget {
   State<UserFlow> createState() => _UserFlowState();
 }
 
-class _UserFlowState extends State<UserFlow> {
+class _UserFlowState extends State<UserFlow> with TickerProviderStateMixin {
   final _settingsManager = SettingsManager();
   String _enteredPin = '';
   bool _isPinVerified = false;
+  bool _readMessages = false;
   String? _selectedLocation;
   bool _isSettingPin = false;
   bool _isResettingPin = false;
   String _newPin = '';
   String _pinError = '';
+  bool _isMessageTimeoutCanceled = false;
   ValueNotifier<bool> isTimerRunning = ValueNotifier(true);
+
+  int _page = 0;
+  AnimationController? _pulseController;
 
   @override
   void initState() {
     super.initState();
+    _page = 0;
+    _pulseController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1000),
+    )..repeat(reverse: true);
     _selectedLocation = widget.allowedLocations?.first;
     _loadSettings();
     if ((widget.user.passwordHash == null ||
@@ -50,6 +62,12 @@ class _UserFlowState extends State<UserFlow> {
         widget.requirePinEntry) {
       _isSettingPin = true;
     }
+  }
+
+  @override
+  void dispose() {
+    _pulseController?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadSettings() async {
@@ -292,6 +310,148 @@ class _UserFlowState extends State<UserFlow> {
       ),
       body: !widget.fromRfid && !_isPinVerified && widget.requirePinEntry
           ? _buildPinEntry(context)
+          : !_readMessages &&
+                (widget.backend.messageTable?.entries.value ?? []).isNotEmpty
+          ? Builder(
+              builder: (context) {
+                final entry =
+                    (widget.backend.messageTable?.entries.value ?? [])[_page];
+                return GestureDetector(
+                  onTapDown: (x) {
+                    setState(() {
+                      _isMessageTimeoutCanceled = true;
+                    });
+                  },
+                  onTap: () {
+                    setState(() {
+                      _isMessageTimeoutCanceled = true;
+                    });
+                  },
+                  behavior: HitTestBehavior.translucent,
+                  child: Column(
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                entry.title,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineMedium,
+                                textAlign: TextAlign.center,
+                              ),
+                              const SizedBox(height: 16),
+                              Expanded(
+                                child: MarkdownWidget(data: entry.message),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (entry.timeout != null &&
+                          !entry.requireAccept &&
+                          !_isMessageTimeoutCanceled)
+                        TweenAnimationBuilder<double>(
+                          key: ValueKey("timer_$_page"),
+                          tween: Tween(begin: 0, end: 1),
+                          duration: Duration(seconds: entry.timeout!),
+                          builder: (context, value, child) {
+                            if (value == 1) {
+                              Future.microtask(() {
+                                if (!context.mounted) return;
+                                setState(() {
+                                  _isMessageTimeoutCanceled = false;
+                                  if (_page <
+                                      (widget
+                                                      .backend
+                                                      .messageTable
+                                                      ?.entries
+                                                      .value ??
+                                                  [])
+                                              .length -
+                                          1) {
+                                    _page += 1;
+                                  } else {
+                                    _readMessages = true;
+                                  }
+                                });
+                              });
+                            }
+                            return LinearProgressIndicator(value: value);
+                          },
+                        ),
+                      if (entry.timeout != null &&
+                          !entry.requireAccept &&
+                          _isMessageTimeoutCanceled)
+                        const SizedBox(height: 4),
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            AnimatedBuilder(
+                              animation: _pulseController!,
+                              builder: (context, child) {
+                                double scale = 1.0;
+                                if (entry.requireAccept) {
+                                  scale = 1.0 + (_pulseController!.value * 0.1);
+                                }
+                                return Transform.scale(
+                                  scale: scale,
+                                  child: ElevatedButton(
+                                    style: ElevatedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 32,
+                                        vertical: 16,
+                                      ),
+                                    ),
+                                    onPressed: () {
+                                      setState(() {
+                                        _isMessageTimeoutCanceled = false;
+                                        if (_page <
+                                            (widget
+                                                            .backend
+                                                            .messageTable
+                                                            ?.entries
+                                                            .value ??
+                                                        [])
+                                                    .length -
+                                                1) {
+                                          _page += 1;
+                                        } else {
+                                          _readMessages = true;
+                                        }
+                                      });
+                                    },
+                                    child: Text(
+                                      (_page <
+                                              (widget
+                                                              .backend
+                                                              .messageTable
+                                                              ?.entries
+                                                              .value ??
+                                                          [])
+                                                      .length -
+                                                  1)
+                                          ? "Next"
+                                          : "Done",
+                                      style: const TextStyle(fontSize: 18),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            )
           : GestureDetector(
               onTap: () {
                 isTimerRunning.value = false;

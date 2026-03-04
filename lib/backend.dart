@@ -5,6 +5,7 @@ import 'dart:io';
 
 import 'package:async/async.dart';
 import 'package:second/log_inst.dart';
+import 'package:second/message_board_loader.dart';
 import 'package:second/passwords.dart';
 import 'package:second/settings.dart';
 import 'package:second/string_ext.dart';
@@ -309,6 +310,7 @@ class AttendanceTrackerBackend {
   static const memberSheetName = "Members";
   static const logSheetName = "Log";
   static const configSheetName = "LogoutTiming";
+  static const configMessagesName = "MessageBoard";
   static const memberSheetContentsRange = "$memberSheetName!A3:G";
   static const memberSheetIdsRange = "$memberSheetName!A3:A";
   static const logSheetContentsRange = "$logSheetName!A3:";
@@ -326,6 +328,7 @@ class AttendanceTrackerBackend {
   Spreadsheet? _spreadsheet;
 
   CheckoutConfigurationTable? timingsTable;
+  MessageBoardConfigurationTable? messageTable;
 
   // tasks
   AdjustableRestartableTimer? _memberFetchTimer;
@@ -447,6 +450,11 @@ class AttendanceTrackerBackend {
         _spreadsheet!,
         AttendanceTrackerBackend.configSheetName,
       );
+      messageTable = MessageBoardConfigurationTable(
+        _sheetsClient!,
+        _spreadsheet!,
+        AttendanceTrackerBackend.configMessagesName,
+      );
 
       final existingTitles =
           _spreadsheet?.sheets
@@ -516,14 +524,15 @@ class AttendanceTrackerBackend {
     }
     _configReloadTimer = AdjustableRestartableTimer(() async {
       logger.t("Reloading config...");
-      _reloadConfig();
+      reloadConfig();
       _configReloadTimer?.restartWith(configReloadDuration!);
     });
     _configReloadTimer?.start(configReloadDuration!);
   }
 
-  Future<void> _reloadConfig() async {
+  Future<void> reloadConfig() async {
     timingsTable?.load();
+    messageTable?.load();
   }
 
   Future<void> _waitUntilQueuesEmpty({

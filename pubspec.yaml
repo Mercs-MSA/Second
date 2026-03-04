@@ -51,6 +51,7 @@ dependencies:
   url_launcher: ^6.3.2
   confetti: ^0.8.0
   transparent_image: ^2.0.1
+  markdown_widget: ^2.3.2+8
 
 dev_dependencies:
   flutter_test:
