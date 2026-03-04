@@ -242,6 +242,10 @@ class _HomePageState extends State<HomePage>
   String _searchQuery = '';
   late ValueNotifier<List<Member>> filteredMembers;
 
+  // sorting options
+  bool _sortAscending = true;
+  String _sortCriteria = 'name'; // 'name' or 'status'
+
   // home screen image
   late ValueNotifier<Uint8List> _homeScreenImage;
 
@@ -253,6 +257,27 @@ class _HomePageState extends State<HomePage>
   late Stream<RfidEvent> _rfidHidStream;
   final List<RfidEvent> _rfidHidInWaiting = [];
   late RestartableTimer _rfidHidTimeoutTimer;
+
+  void _updateFilteredMembers() {
+    final List<Member> members = _backend.attendance.value.where((member) {
+      return member.name.toLowerCase().contains(_searchQuery.toLowerCase());
+    }).toList();
+
+    members.sort((a, b) {
+      int result;
+      if (_sortCriteria == 'name') {
+        result = a.name.toLowerCase().compareTo(b.name.toLowerCase());
+      } else {
+        // Status sort: present vs out
+        // In backend.dart, AttendanceStatus is: enum AttendanceStatus { present, out }
+        // present.index = 0, out.index = 1
+        result = a.status.index.compareTo(b.status.index);
+      }
+      return _sortAscending ? result : -result;
+    });
+
+    filteredMembers.value = members;
+  }
 
   @override
   void initState() {
@@ -1008,20 +1033,90 @@ class _HomePageState extends State<HomePage>
                                         ),
                                         onChanged: (value) {
                                           _searchQuery = value;
-                                          filteredMembers.value = _backend
-                                              .attendance
-                                              .value
-                                              .where(
-                                                (member) => member.name
-                                                    .toLowerCase()
-                                                    .contains(
-                                                      _searchQuery
-                                                          .toLowerCase(),
-                                                    ),
-                                              )
-                                              .toList();
+                                          _updateFilteredMembers();
                                         },
                                       ),
+                                    ),
+                                    SizedBox(width: 8.0),
+                                    PopupMenuButton<String>(
+                                      icon: Icon(Icons.filter_list),
+                                      tooltip: "Sort",
+                                      onSelected: (value) {
+                                        setState(() {
+                                          if (value == 'name_asc') {
+                                            _sortCriteria = 'name';
+                                            _sortAscending = true;
+                                          } else if (value == 'name_desc') {
+                                            _sortCriteria = 'name';
+                                            _sortAscending = false;
+                                          } else if (value == 'status_asc') {
+                                            _sortCriteria = 'status';
+                                            _sortAscending = true;
+                                          } else if (value == 'status_desc') {
+                                            _sortCriteria = 'status';
+                                            _sortAscending = false;
+                                          }
+                                          _updateFilteredMembers();
+                                        });
+                                      },
+                                      itemBuilder: (context) => [
+                                        PopupMenuItem(
+                                          value: 'name_asc',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.sort_by_alpha),
+                                              SizedBox(width: 8),
+                                              Text('Name (A-Z)'),
+                                              Spacer(),
+                                              if (_sortCriteria == "name" &&
+                                                  _sortAscending)
+                                                Icon(Icons.check),
+                                            ],
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'name_desc',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.sort_by_alpha),
+                                              SizedBox(width: 8),
+                                              Text('Name (Z-A)'),
+                                              Spacer(),
+                                              if (_sortCriteria == "name" &&
+                                                  !_sortAscending)
+                                                Icon(Icons.check),
+                                            ],
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'status_asc',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.query_stats),
+                                              SizedBox(width: 8),
+                                              Text('Status (Present First)'),
+                                              Spacer(),
+                                              if (_sortCriteria == "status" &&
+                                                  _sortAscending)
+                                                Icon(Icons.check),
+                                            ],
+                                          ),
+                                        ),
+                                        PopupMenuItem(
+                                          value: 'status_desc',
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.query_stats),
+                                              SizedBox(width: 8),
+                                              Text('Status (Out First)'),
+                                              Spacer(),
+                                              if (_sortCriteria == "status" &&
+                                                  !_sortAscending)
+                                                Icon(Icons.check),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                     SizedBox(width: 8.0),
                                     AsyncCompleterButton(
@@ -1039,17 +1134,7 @@ class _HomePageState extends State<HomePage>
                                 child: ValueListenableBuilder<List<Member>>(
                                   valueListenable: _backend.attendance,
                                   builder: (context, attendanceValue, child) {
-                                    filteredMembers.value = _backend
-                                        .attendance
-                                        .value
-                                        .where(
-                                          (member) => member.name
-                                              .toLowerCase()
-                                              .contains(
-                                                _searchQuery.toLowerCase(),
-                                              ),
-                                        )
-                                        .toList();
+                                    _updateFilteredMembers();
                                     return ValueListenableBuilder(
                                       valueListenable: filteredMembers,
                                       builder: (context, filterValue, child) {
