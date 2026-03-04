@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:googleapis/sheets/v4.dart';
-import 'package:second/settings.dart';
 import 'package:second/util.dart';
 
 class CheckoutConfigEntry {
@@ -52,14 +50,14 @@ class CheckoutConfigEntry {
 class CheckoutScheduler {
   List<CheckoutConfigEntry> configs;
   final Function(CheckoutConfigEntry entry, DateTime appliedTime) onTrigger;
-  final String _storageKey = "checkout_execution_registry";
 
   Timer? _timer;
+  int? _lastProcessedMinute;
+  int? _lastProcessedDay;
 
   CheckoutScheduler({required this.configs, required this.onTrigger});
 
   void start() {
-    _checkAndExecute();
     _timer = Timer.periodic(
       const Duration(seconds: 1),
       (timer) => _checkAndExecute(),
@@ -68,33 +66,25 @@ class CheckoutScheduler {
 
   void stop() => _timer?.cancel();
 
-  Future<void> _checkAndExecute() async {
+  void _checkAndExecute() {
     final now = DateTime.now();
-    final todayStr = "${now.year}-${now.month}-${now.day}";
-    final settings = SettingsManager.getInstance;
 
-    String rawData = settings.prefs?.getString(_storageKey) ?? "{}";
-    Map<String, dynamic> registry = jsonDecode(rawData);
-    bool needsUpdate = false;
+    // Only run check once per minute
+    if (_lastProcessedMinute == now.minute && _lastProcessedDay == now.day) {
+      return;
+    }
 
-    // Since configs is not final, we iterate through the current state of the list
     for (var entry in configs) {
       if (!entry.enable) continue;
 
-      // The hashCode acts as our unique ID based on the specific schedule values
-      final String entryId = entry.hashCode.toString();
-
-      if (registry[entryId] == todayStr) continue;
-
       bool isCorrectDay = entry.dayOfWeek == now.weekday;
-      bool isTimePassed =
-          (now.hour > entry.checkTime.hour) ||
-          (now.hour == entry.checkTime.hour &&
-              now.minute >= entry.checkTime.minute);
+      bool isExactTime =
+          now.hour == entry.checkTime.hour &&
+          now.minute == entry.checkTime.minute;
 
-      if (isCorrectDay && isTimePassed) {
-        registry[entryId] = todayStr;
-        needsUpdate = true;
+      if (isCorrectDay && isExactTime) {
+        _lastProcessedMinute = now.minute;
+        _lastProcessedDay = now.day;
 
         DateTime appliedTime = DateTime(
           now.year,
@@ -111,10 +101,6 @@ class CheckoutScheduler {
 
         onTrigger(entry, appliedTime);
       }
-    }
-
-    if (needsUpdate) {
-      await settings.prefs?.setString(_storageKey, jsonEncode(registry));
     }
   }
 }

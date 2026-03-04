@@ -948,6 +948,26 @@ class AttendanceTrackerBackend {
         googleConnected.value = false;
         return;
       }
+      // TODO: this can be updated in-memory without a request
+      // fetch log header
+      try {
+        header = await _sheetsClient?.spreadsheets.values.get(
+          _sheetId ?? "",
+          AttendanceTrackerBackend.logSheetHeaderRange,
+        );
+      } on SocketException catch (e) {
+        logger.w("Google is down!!! $e");
+        googleConnected.value = false;
+        return;
+      } on TimeoutException catch (e) {
+        logger.w("Google is down with timeout!!! $e");
+        googleConnected.value = false;
+        return;
+      } on DetailedApiRequestError catch (e) {
+        logger.w("Google is down with error!!! $e");
+        googleConnected.value = false;
+        return;
+      }
     } else {
       // format: ID, Name, " ", " ", ...
       // get remote ids
@@ -1091,11 +1111,18 @@ class AttendanceTrackerBackend {
           return;
         }
 
+        final memberEntriesBefore = _logQueue
+            .toList()
+            .sublist(0, _logQueue.toList().indexOf(entry))
+            .where((e) => e.memberId == entry.memberId)
+            .length;
+
         final safeNextLogRow =
-            _logQueue.toList().indexOf(entry) +
+            memberEntriesBefore +
             (int.tryParse((header?.values?[0][startCol + 2]).toString()) ??
                 -2) +
             1;
+
         if (safeNextLogRow == -1) {
           logger.e(
             "Something is wrong with the log count for user ${entry.memberId}!!! Check the log header for errors. Cancelling update.",
