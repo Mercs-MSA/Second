@@ -667,8 +667,10 @@ class AttendanceTrackerBackend {
         continue;
       }
       var parsedPfp = googleMember.elementAtOrNull(6) as String?;
-      if (parsedPfp?.startsWith("=IMAGE(\"") ?? false) {
+      if ((parsedPfp?.startsWith("=IMAGE(\"") ?? false) ||
+          (parsedPfp?.startsWith("=image(\"") ?? false)) {
         parsedPfp = parsedPfp?.replaceFirst("=IMAGE(\"", "");
+        parsedPfp = parsedPfp?.replaceFirst("=image(\"", "");
         parsedPfp = parsedPfp?.substring(0, parsedPfp.length - 2);
       }
       newMembers.add(
