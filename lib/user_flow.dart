@@ -1,3 +1,4 @@
+import 'package:glob/glob.dart';
 import 'package:markdown_widget/markdown_widget.dart';
 import 'package:second/backend.dart';
 import 'package:second/message_board_loader.dart';
@@ -6,6 +7,29 @@ import 'package:second/settings.dart';
 import 'package:second/settings_page.dart';
 import 'package:flutter/material.dart';
 import 'package:transparent_image/transparent_image.dart';
+
+bool filterTarget(String role, String id, List<String> targets) {
+  if (targets.contains(role) || targets.isEmpty) {
+    return true;
+  }
+  for (final target in targets) {
+    if (Glob(target).matches(id)) {
+      return true;
+    }
+  }
+  return false;
+}
+
+List<MessageBoardEntry> myMessages(String role, String id, List<MessageBoardEntry> entries) {
+  List<MessageBoardEntry> newEntries = [];
+  for (final entry in entries) {
+    if (filterTarget(role, id, entry.targets)) {
+      newEntries.add(entry);
+
+    }
+  }
+  return newEntries;
+}
 
 class UserFlow extends StatefulWidget {
   final Member user;
@@ -311,11 +335,11 @@ class _UserFlowState extends State<UserFlow> with TickerProviderStateMixin {
       body: !widget.fromRfid && !_isPinVerified && widget.requirePinEntry
           ? _buildPinEntry(context)
           : !_readMessages &&
-                (widget.backend.messageTable?.entries.value ?? []).isNotEmpty
+          myMessages(widget.user.privilege.name.toUpperCase(), widget.user.id.toString(), widget.backend.messageTable?.entries.value ?? []).isNotEmpty
           ? Builder(
               builder: (context) {
                 final entry =
-                    (widget.backend.messageTable?.entries.value ?? [])[_page];
+                    myMessages(widget.user.privilege.name.toUpperCase(), widget.user.id.toString(), widget.backend.messageTable?.entries.value ?? [])[_page];
                 return GestureDetector(
                   onTapDown: (x) {
                     setState(() {
@@ -365,7 +389,7 @@ class _UserFlowState extends State<UserFlow> with TickerProviderStateMixin {
                                 setState(() {
                                   _isMessageTimeoutCanceled = false;
                                   if (_page <
-                                      (widget
+                                      myMessages(widget.user.privilege.name.toUpperCase(), widget.user.id.toString(), widget
                                                       .backend
                                                       .messageTable
                                                       ?.entries
@@ -412,7 +436,7 @@ class _UserFlowState extends State<UserFlow> with TickerProviderStateMixin {
                                       setState(() {
                                         _isMessageTimeoutCanceled = false;
                                         if (_page <
-                                            (widget
+                                            myMessages(widget.user.privilege.name.toUpperCase(), widget.user.id.toString(), widget
                                                             .backend
                                                             .messageTable
                                                             ?.entries
@@ -428,7 +452,7 @@ class _UserFlowState extends State<UserFlow> with TickerProviderStateMixin {
                                     },
                                     child: Text(
                                       (_page <
-                                              (widget
+                                              myMessages(widget.user.privilege.name.toUpperCase(), widget.user.id.toString(), widget
                                                               .backend
                                                               .messageTable
                                                               ?.entries

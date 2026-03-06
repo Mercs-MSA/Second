@@ -10,8 +10,9 @@ class MessageBoardEntry {
   String message;
   int? timeout;
   bool requireAccept;
+  List<String> targets;
 
-  MessageBoardEntry(this.title, this.message, this.timeout, this.requireAccept);
+  MessageBoardEntry(this.title, this.message, this.timeout, this.requireAccept, this.targets);
 }
 
 class MessageBoardConfigurationTable {
@@ -96,6 +97,7 @@ class MessageBoardConfigurationTable {
           rawEntry[1].toString(),
           int.tryParse(rawEntry[2].toString()),
           rawEntry[3].toString().toLowerCase() == "true",
+          rawEntry[4].toString().split(",")
         ),
       );
     }
