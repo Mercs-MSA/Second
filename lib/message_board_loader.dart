@@ -33,6 +33,7 @@ class MessageBoardConfigurationTable {
       "message",
       "timeout",
       "require-accept",
+      "target",
       "read-by",
     ],
   });

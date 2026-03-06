@@ -512,6 +512,7 @@ class AttendanceTrackerBackend {
     if (_updateTimer != null) {
       _updateTimer!.cancel();
     }
+    reloadConfig();
     _updateTimer = AdjustableRestartableTimer(() async {
       await _update();
       await _updateLog();
